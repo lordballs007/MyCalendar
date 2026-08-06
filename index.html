@@ -12,7 +12,8 @@
       --border: #ced4da;
       --primary: #2b6cb0;
       /* Status Colors */
-      --status-none: #ffffff;
+      --status-none-cal: #ffffff;
+	  --status-none: #d5e6f7;
       --status-light: #fef08a;
       --status-medium: #eab308;
       --status-heavy: #f97316;
@@ -87,7 +88,7 @@
 
     .week-num-btn.selected {
       border-color: #2d3748;
-      background: #edf2f7;
+      background: #d5e6f7;
     }
 
     /* Single Select (Overall Severity) */
@@ -272,7 +273,7 @@
     .btn-generate-summary {
       width: 100%;
       padding: 14px;
-      border: 2px solid #000;
+      border: 2px solid var(--border);
       border-radius: 16px;
       background: #fff;
       font-family: monospace;
@@ -406,7 +407,7 @@
     </div>
 
     <!-- Medication Cycle Week (Independent Tracker) -->
-    <div class="section-title">Week:</div>
+    <div class="section-title">Med Week</div>
     <div class="week-num-group" id="weekNumGroup">
       <div class="week-num-btn" onclick="setMedWeek(1)">1</div>
       <div class="week-num-btn" onclick="setMedWeek(2)">2</div>
@@ -414,8 +415,8 @@
       <div class="week-num-btn" onclick="setMedWeek(4)">4</div>
     </div>
 
-    <!-- Overall Severity (Single Select) -->
-    <div class="section-title">Overall Severity (Single Select)</div>
+    <!-- Overall Severity -->
+    <div class="section-title">Flow</div>
     <div class="radio-group" id="severityGroup">
       <div class="radio-btn" onclick="setSeverity('None')">None</div>
       <div class="radio-btn" onclick="setSeverity('Light')">Light</div>
@@ -424,7 +425,7 @@
     </div>
 
     <!-- Symptoms (Custom Multi-Select) -->
-    <div class="section-title">Symptoms (Multi Select)</div>
+    <div class="section-title">Symptoms</div>
     <div class="custom-multiselect" id="customMultiselect">
       <div class="dropdown-btn" onclick="toggleSymptomMenu(event)">
         <span>Select Symptoms...</span>
@@ -465,7 +466,7 @@
     <div class="summary-container" id="summaryContainer">
       <div class="summary-title">Summary Statistics</div>
       
-      <div class="summary-section-title">Trailing 8 Weeks</div>
+      <div class="summary-section-title" id="trailing8title" >Trailing 8 Weeks</div>
       
       <div class="summary-sub-title">Severity Count by Week</div>
       <table class="summary-table">
@@ -495,10 +496,10 @@
       </table>
 
       <div class="summary-sub-title">Top 3 Symptoms Overall</div>
-      <ol class="summary-list" id="topSymptomsOverallList"></ol>
+      <ol class="summary-list" id="topSymptomsOverallList" style="margin-left: 10px"></ol>
 
       <div class="summary-sub-title">All Notes:</div>
-      <div class="summary-notes-list" id="allNotesList"></div>
+      <div class="summary-notes-list" id="allNotesList" style="margin-left: 10px"></div>
     </div>
   </div>
 
@@ -511,9 +512,9 @@
 
 <script>
   const symptomOptions = [
-    "Acne", "Bloating", "Brain fog", "Cramps/Pain", "Discomfort",
+    "Acne", "Bloating", "Brain Fog", "Cramps/Pain", "Discomfort",
     "Dizziness", "Fatigue", "Headache", "Irritability", "Nausea",
-    "Night sweats", "Sleep disruption", "Vivid dreams"
+    "Night sweats", "Poor Sleep", "Vivid dreams"
   ];
 
   let selectedDate = new Date(); // Default today
@@ -676,7 +677,7 @@
       const dayLog = logs[key];
       const severity = dayLog ? dayLog.severity : 'None';
 
-      let bg = 'var(--status-none)';
+      let bg = 'var(--status-none-cal)';
       if (severity === 'Light') bg = 'var(--status-light)';
       if (severity === 'Medium') bg = 'var(--status-medium)';
       if (severity === 'Heavy') bg = 'var(--status-heavy)';
@@ -793,6 +794,10 @@
       }
     }
 
+	// 0. Update title
+	const sumTitle = document.getElementById('trailing8title');
+	sumTitle.innerHTML = 'Trailing 8 Weeks from ' + today.toLocaleDateString('en-US');
+
     // 1. Render Severity Count Table
     const sevTableBody = document.getElementById('severityTableBody');
     sevTableBody.innerHTML = '';
@@ -816,9 +821,9 @@
         .sort((a, b) => b[1] - a[1])
         .slice(0, 3);
 
-      const cell1 = sorted[0] ? `${sorted[0][0]} (x${sorted[0][1]})` : '-';
-      const cell2 = sorted[1] ? `${sorted[1][0]} (x${sorted[1][1]})` : '-';
-      const cell3 = sorted[2] ? `${sorted[2][0]} (x${sorted[2][1]})` : '-';
+      const cell1 = sorted[0] ? `${sorted[0][0]} (${sorted[0][1]})` : '-';
+      const cell2 = sorted[1] ? `${sorted[1][0]} (${sorted[1][1]})` : '-';
+      const cell3 = sorted[2] ? `${sorted[2][0]} (${sorted[2][1]})` : '-';
 
       const row = document.createElement('tr');
       row.innerHTML = `
