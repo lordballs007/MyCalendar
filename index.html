@@ -91,7 +91,7 @@
       background: #d5e6f7;
     }
 
-    /* Single Select (Overall Severity) */
+    /* Single Select (Overall Flow) */
     .radio-group {
       display: flex;
       gap: 8px;
@@ -305,8 +305,14 @@
     .summary-section-title {
       font-size: 1.1rem;
       font-weight: bold;
-      margin: 16px 0 8px 0;
+      margin: 16px 0 4px 0;
     }
+	
+	.summary-section-title-desc {
+	  font-size: 0.95rem;
+      font-weight: normal;
+      margin: 4px 0 10px 0;
+	}
 
     .summary-sub-title {
       font-size: 0.9rem;
@@ -415,13 +421,13 @@
       <div class="week-num-btn" onclick="setMedWeek(4)">4</div>
     </div>
 
-    <!-- Overall Severity -->
+    <!-- Flow -->
     <div class="section-title">Flow</div>
-    <div class="radio-group" id="severityGroup">
-      <div class="radio-btn" onclick="setSeverity('None')">None</div>
-      <div class="radio-btn" onclick="setSeverity('Light')">Light</div>
-      <div class="radio-btn" onclick="setSeverity('Medium')">Medium</div>
-      <div class="radio-btn" onclick="setSeverity('Heavy')">Heavy</div>
+    <div class="radio-group" id="flowGroup">
+      <div class="radio-btn" onclick="setFlow('None')">None</div>
+      <div class="radio-btn" onclick="setFlow('Light')">Light</div>
+      <div class="radio-btn" onclick="setFlow('Medium')">Medium</div>
+      <div class="radio-btn" onclick="setFlow('Heavy')">Heavy</div>
     </div>
 
     <!-- Symptoms (Custom Multi-Select) -->
@@ -466,9 +472,9 @@
     <div class="summary-container" id="summaryContainer">
       <div class="summary-title">Summary Statistics</div>
       
-      <div class="summary-section-title" id="trailing8title" >Trailing 8 Weeks</div>
-      
-      <div class="summary-sub-title">Severity Count by Week</div>
+      <div class="summary-section-title" id="trailingTitle" >Trailing # Weeks</div>
+      <div class="summary-section-title-desc" id="trailingTitleDates" >DDDD - DDDD</div>
+      <div class="summary-sub-title">Flow Count by Week</div>
       <table class="summary-table">
         <thead>
           <tr>
@@ -479,7 +485,7 @@
             <th>High</th>
           </tr>
         </thead>
-        <tbody id="severityTableBody"></tbody>
+        <tbody id="flowTableBody"></tbody>
       </table>
 
       <div class="summary-sub-title">Top 3 Symptoms by Med Week</div>
@@ -564,7 +570,7 @@
   function toggleSymptom(symptom) {
     const key = getKey(selectedDate);
     const logs = getLogs();
-    if (!logs[key]) logs[key] = { medWeek: null, severity: 'None', symptoms: [], notes: '' };
+    if (!logs[key]) logs[key] = { medWeek: null, flow: 'None', symptoms: [], notes: '' };
     
     const idx = logs[key].symptoms.indexOf(symptom);
     if (idx > -1) {
@@ -579,7 +585,7 @@
 
   function initDayView() {
     const key = getKey(selectedDate);
-    const logs = getLogs()[key] || { medWeek: null, severity: 'None', symptoms: [], notes: '' };
+    const logs = getLogs()[key] || { medWeek: null, flow: 'None', symptoms: [], notes: '' };
 
     document.getElementById('currentDateTitle').innerText = selectedDate.toLocaleDateString('en-US', {
       weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
@@ -590,9 +596,9 @@
       btn.classList.toggle('selected', (idx + 1) === logs.medWeek);
     });
 
-    // Highlight Severity Buttons
-    document.querySelectorAll('#severityGroup .radio-btn').forEach(btn => {
-      btn.classList.toggle('selected', btn.getAttribute('data-val') === logs.severity);
+    // Highlight Flow Buttons
+    document.querySelectorAll('#flowGroup .radio-btn').forEach(btn => {
+      btn.classList.toggle('selected', btn.getAttribute('data-val') === logs.flow);
     });
 
     renderSymptomChips(logs.symptoms || []);
@@ -606,7 +612,7 @@
   function setMedWeek(weekNum) {
     const key = getKey(selectedDate);
     const logs = getLogs();
-    if (!logs[key]) logs[key] = { medWeek: null, severity: 'None', symptoms: [], notes: '' };
+    if (!logs[key]) logs[key] = { medWeek: null, flow: 'None', symptoms: [], notes: '' };
     
     // Toggle off if clicking the currently selected week
     logs[key].medWeek = logs[key].medWeek === weekNum ? null : weekNum;
@@ -614,11 +620,11 @@
     initDayView();
   }
 
-  function setSeverity(val) {
+  function setFlow(val) {
     const key = getKey(selectedDate);
     const logs = getLogs();
-    if (!logs[key]) logs[key] = { medWeek: null, severity: 'None', symptoms: [], notes: '' };
-    logs[key].severity = val;
+    if (!logs[key]) logs[key] = { medWeek: null, flow: 'None', symptoms: [], notes: '' };
+    logs[key].flow = val;
     localStorage.setItem('symptom_logs', JSON.stringify(logs));
     initDayView();
   }
@@ -641,7 +647,7 @@
   function saveNotes() {
     const key = getKey(selectedDate);
     const logs = getLogs();
-    if (!logs[key]) logs[key] = { medWeek: null, severity: 'None', symptoms: [], notes: '' };
+    if (!logs[key]) logs[key] = { medWeek: null, flow: 'None', symptoms: [], notes: '' };
     logs[key].notes = document.getElementById('dailyNotes').value;
     localStorage.setItem('symptom_logs', JSON.stringify(logs));
   }
@@ -675,18 +681,18 @@
       const dateObj = new Date(currentMonthView.getFullYear(), currentMonthView.getMonth(), d);
       const key = getKey(dateObj);
       const dayLog = logs[key];
-      const severity = dayLog ? dayLog.severity : 'None';
+      const flow = dayLog ? dayLog.flow : 'None';
 
       let bg = 'var(--status-none-cal)';
-      if (severity === 'Light') bg = 'var(--status-light)';
-      if (severity === 'Medium') bg = 'var(--status-medium)';
-      if (severity === 'Heavy') bg = 'var(--status-heavy)';
+      if (flow === 'Light') bg = 'var(--status-light)';
+      if (flow === 'Medium') bg = 'var(--status-medium)';
+      if (flow === 'Heavy') bg = 'var(--status-heavy)';
 
       const dayEl = document.createElement('div');
       dayEl.className = 'cal-day';
       dayEl.innerText = d;
       dayEl.style.backgroundColor = bg;
-      if (severity === 'Medium' || severity === 'Heavy') dayEl.style.color = '#fff';
+      if (flow === 'Medium' || flow === 'Heavy') dayEl.style.color = '#fff';
 
       dayEl.onclick = () => {
         selectedDate = dateObj;
@@ -751,9 +757,11 @@
   function renderSummaryView() {
     const logs = getLogs();
     const today = new Date();
+	console.log("Today = ",today);
+	const weekCt = 12;
 
-    // Data Aggregation structures for trailing 8 weeks (56 days)
-    const severityByWeek = { 1: { None: 0, Light: 0, Medium: 0, Heavy: 0 },
+    // Data Aggregation structures for trailing 12 Weeks / 84 days
+    const flowByWeek = { 1: { None: 0, Light: 0, Medium: 0, Heavy: 0 },
                              2: { None: 0, Light: 0, Medium: 0, Heavy: 0 },
                              3: { None: 0, Light: 0, Medium: 0, Heavy: 0 },
                              4: { None: 0, Light: 0, Medium: 0, Heavy: 0 } };
@@ -762,18 +770,20 @@
     const overallSymptoms = {};
     const notesLog = [];
 
-    for (let i = 55; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(today.getDate() - i);
-      const key = getKey(d);
+	let startDate = new Date();
+	const daysAgo = (weekCt*7);
+    for (let i = 0; i < daysAgo; i++) {
+	  startDate = new Date();
+	  startDate.setDate(today.getDate() - i);
+      const key = getKey(startDate);
       const dayLog = logs[key];
 
       if (dayLog) {
         const weekNum = dayLog.medWeek;
-        const severity = dayLog.severity || 'None';
+        const flow = dayLog.flow || 'None';
 
-        if (weekNum && severityByWeek[weekNum]) {
-          severityByWeek[weekNum][severity] = (severityByWeek[weekNum][severity] || 0) + 1;
+        if (weekNum && flowByWeek[weekNum]) {
+          flowByWeek[weekNum][flow] = (flowByWeek[weekNum][flow] || 0) + 1;
         }
 
         if (weekNum && dayLog.symptoms) {
@@ -794,21 +804,24 @@
       }
     }
 
-	// 0. Update title
-	const sumTitle = document.getElementById('trailing8title');
-	sumTitle.innerHTML = 'Trailing 8 Weeks from ' + today.toLocaleDateString('en-US');
+	// 0. Update titles
+	const dateOpts = { weekday: 'short', year: '2-digit', month: 'numeric', day: 'numeric' };
+	const sumTitle = document.getElementById('trailingTitle');
+	sumTitle.innerHTML = 'Trailing ' + weekCt + ' Weeks';
+	const sumTitleDateDescr = document.getElementById('trailingTitleDates');
+	sumTitleDateDescr.innerHTML = startDate.toLocaleDateString('en-US', dateOpts) + ' - ' + today.toLocaleDateString('en-US', dateOpts);
 
-    // 1. Render Severity Count Table
-    const sevTableBody = document.getElementById('severityTableBody');
+    // 1. Render Flow Count Table
+    const sevTableBody = document.getElementById('flowTableBody');
     sevTableBody.innerHTML = '';
     [1, 2, 3, 4].forEach(w => {
       const row = document.createElement('tr');
       row.innerHTML = `
         <td>${w}</td>
-        <td>${severityByWeek[w].None}</td>
-        <td>${severityByWeek[w].Light}</td>
-        <td>${severityByWeek[w].Medium}</td>
-        <td>${severityByWeek[w].Heavy}</td>
+        <td>${flowByWeek[w].None}</td>
+        <td>${flowByWeek[w].Light}</td>
+        <td>${flowByWeek[w].Medium}</td>
+        <td>${flowByWeek[w].Heavy}</td>
       `;
       sevTableBody.appendChild(row);
     });
@@ -904,7 +917,7 @@
     }
   }
 
-  document.querySelectorAll('#severityGroup .radio-btn').forEach(btn => {
+  document.querySelectorAll('#flowGroup .radio-btn').forEach(btn => {
     btn.setAttribute('data-val', btn.innerText);
   });
 
