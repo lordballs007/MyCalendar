@@ -222,6 +222,7 @@
       grid-template-columns: repeat(7, 1fr);
       gap: 6px;
       text-align: center;
+      margin-bottom: 24px;
     }
 
     .cal-day-header { font-weight: bold; color: #718096; padding-bottom: 6px; font-size: 0.85rem; }
@@ -266,6 +267,90 @@
       border-radius: 8px;
       border: 1px solid var(--border);
       font-size: 1rem;
+    }
+
+    .btn-generate-summary {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #000;
+      border-radius: 16px;
+      background: #fff;
+      font-family: monospace;
+      font-size: 1.15rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      margin-bottom: 16px;
+    }
+
+    .btn-generate-summary:active {
+      background: #f7fafc;
+    }
+
+    /* Summary View Styling */
+    .summary-container {
+      font-family: monospace;
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .summary-title {
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin: 0 0 16px 0;
+    }
+
+    .summary-section-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin: 16px 0 8px 0;
+    }
+
+    .summary-sub-title {
+      font-size: 0.9rem;
+      font-weight: bold;
+      margin: 8px 0 6px 0;
+    }
+
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+      font-size: 0.8rem;
+    }
+
+    .summary-table th, .summary-table td {
+      border: 1px solid #000;
+      padding: 6px 4px;
+      text-align: center;
+    }
+
+    .summary-table th {
+      background-color: #1e6b8b;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .summary-table td:first-child {
+      background-color: #cbebfa;
+    }
+
+    .summary-list {
+      margin: 0 0 16px 0;
+      padding-left: 20px;
+      font-size: 0.85rem;
+    }
+
+    .summary-notes-list {
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+    }
+
+    .summary-note-item {
+      margin-bottom: 6px;
+      padding-bottom: 6px;
+      border-bottom: 1px dashed #ccc;
     }
 
     /* Bottom Nav Bar */
@@ -371,6 +456,50 @@
     </div>
 
     <div class="calendar-grid" id="calendarGrid"></div>
+
+    <button class="btn-generate-summary" onclick="toggleView('summary')">Generate Summary</button>
+  </div>
+
+  <!-- SUMMARY VIEW -->
+  <div id="summaryView" class="view-panel">
+    <div class="summary-container" id="summaryContainer">
+      <div class="summary-title">Summary Statistics</div>
+      
+      <div class="summary-section-title">Trailing 8 Weeks</div>
+      
+      <div class="summary-sub-title">Severity Count by Week</div>
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Week</th>
+            <th>None</th>
+            <th>Low</th>
+            <th>Medium</th>
+            <th>High</th>
+          </tr>
+        </thead>
+        <tbody id="severityTableBody"></tbody>
+      </table>
+
+      <div class="summary-sub-title">Top 3 Symptoms by Med Week</div>
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Week</th>
+            <th>1st</th>
+            <th>2nd</th>
+            <th>3rd</th>
+          </tr>
+        </thead>
+        <tbody id="symptomsByWeekTableBody"></tbody>
+      </table>
+
+      <div class="summary-sub-title">Top 3 Symptoms Overall</div>
+      <ol class="summary-list" id="topSymptomsOverallList"></ol>
+
+      <div class="summary-sub-title">All Notes:</div>
+      <div class="summary-notes-list" id="allNotesList"></div>
+    </div>
   </div>
 
   <!-- BOTTOM NAV BAR -->
@@ -618,9 +747,128 @@
     renderMonthView();
   }
 
+  function renderSummaryView() {
+    const logs = getLogs();
+    const today = new Date();
+
+    // Data Aggregation structures for trailing 8 weeks (56 days)
+    const severityByWeek = { 1: { None: 0, Light: 0, Medium: 0, Heavy: 0 },
+                             2: { None: 0, Light: 0, Medium: 0, Heavy: 0 },
+                             3: { None: 0, Light: 0, Medium: 0, Heavy: 0 },
+                             4: { None: 0, Light: 0, Medium: 0, Heavy: 0 } };
+
+    const symptomsByWeek = { 1: {}, 2: {}, 3: {}, 4: {} };
+    const overallSymptoms = {};
+    const notesLog = [];
+
+    for (let i = 55; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(today.getDate() - i);
+      const key = getKey(d);
+      const dayLog = logs[key];
+
+      if (dayLog) {
+        const weekNum = dayLog.medWeek;
+        const severity = dayLog.severity || 'None';
+
+        if (weekNum && severityByWeek[weekNum]) {
+          severityByWeek[weekNum][severity] = (severityByWeek[weekNum][severity] || 0) + 1;
+        }
+
+        if (weekNum && dayLog.symptoms) {
+          dayLog.symptoms.forEach(sym => {
+            symptomsByWeek[weekNum][sym] = (symptomsByWeek[weekNum][sym] || 0) + 1;
+          });
+        }
+
+        if (dayLog.symptoms) {
+          dayLog.symptoms.forEach(sym => {
+            overallSymptoms[sym] = (overallSymptoms[sym] || 0) + 1;
+          });
+        }
+
+        if (dayLog.notes && dayLog.notes.trim()) {
+          notesLog.push({ dateStr: key, text: dayLog.notes.trim() });
+        }
+      }
+    }
+
+    // 1. Render Severity Count Table
+    const sevTableBody = document.getElementById('severityTableBody');
+    sevTableBody.innerHTML = '';
+    [1, 2, 3, 4].forEach(w => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${w}</td>
+        <td>${severityByWeek[w].None}</td>
+        <td>${severityByWeek[w].Light}</td>
+        <td>${severityByWeek[w].Medium}</td>
+        <td>${severityByWeek[w].Heavy}</td>
+      `;
+      sevTableBody.appendChild(row);
+    });
+
+    // 2. Render Top 3 Symptoms by Med Week Table
+    const symWeekTableBody = document.getElementById('symptomsByWeekTableBody');
+    symWeekTableBody.innerHTML = '';
+    [1, 2, 3, 4].forEach(w => {
+      const sorted = Object.entries(symptomsByWeek[w])
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3);
+
+      const cell1 = sorted[0] ? `${sorted[0][0]} (x${sorted[0][1]})` : '-';
+      const cell2 = sorted[1] ? `${sorted[1][0]} (x${sorted[1][1]})` : '-';
+      const cell3 = sorted[2] ? `${sorted[2][0]} (x${sorted[2][1]})` : '-';
+
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${w}</td>
+        <td>${cell1}</td>
+        <td>${cell2}</td>
+        <td>${cell3}</td>
+      `;
+      symWeekTableBody.appendChild(row);
+    });
+
+    // 3. Render Top 3 Symptoms Overall List
+    const topOverallList = document.getElementById('topSymptomsOverallList');
+    topOverallList.innerHTML = '';
+    const sortedOverall = Object.entries(overallSymptoms)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3);
+
+    if (sortedOverall.length === 0) {
+      topOverallList.innerHTML = '<li>No symptoms logged yet.</li>';
+    } else {
+      sortedOverall.forEach(([sym, count]) => {
+        topOverallList.innerHTML += `<li>${sym} (x${count})</li>`;
+      });
+    }
+
+    // 4. Render All Notes
+    const notesContainer = document.getElementById('allNotesList');
+    notesContainer.innerHTML = '';
+    if (notesLog.length === 0) {
+      notesContainer.innerText = 'No notes recorded in the last 8 weeks.';
+    } else {
+      notesLog.forEach(n => {
+        const item = document.createElement('div');
+        item.className = 'summary-note-item';
+        item.innerHTML = `<strong>${n.dateStr}:</strong> ${n.text}`;
+        notesContainer.appendChild(item);
+      });
+    }
+
+    // Updated icon for Summary view
+    document.getElementById('centerNavBtn').innerText = '📅';
+  }
+
   function handleCenterNavClick() {
     const dayView = document.getElementById('dayView');
-    if (dayView.classList.contains('active')) {
+    const summaryView = document.getElementById('summaryView');
+    
+    // Switch to Month view if Day OR Summary view is currently active
+    if (dayView.classList.contains('active') || summaryView.classList.contains('active')) {
       toggleView('month');
     } else {
       currentMonthView = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
@@ -631,16 +879,23 @@
   function toggleView(target) {
     const dayView = document.getElementById('dayView');
     const monthView = document.getElementById('monthView');
+    const summaryView = document.getElementById('summaryView');
+    
     document.getElementById('quickMonthSelect').classList.remove('active');
     
+    dayView.classList.remove('active');
+    monthView.classList.remove('active');
+    summaryView.classList.remove('active');
+
     if (target === 'day') {
-      monthView.classList.remove('active');
       dayView.classList.add('active');
       initDayView();
-    } else {
-      dayView.classList.remove('active');
+    } else if (target === 'month') {
       monthView.classList.add('active');
       renderMonthView();
+    } else if (target === 'summary') {
+      summaryView.classList.add('active');
+      renderSummaryView();
     }
   }
 
