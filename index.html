@@ -915,7 +915,7 @@
     const notesContainer = document.getElementById('allNotesList');
     notesContainer.innerHTML = '';
     if (notesLog.length === 0) {
-      notesContainer.innerText = 'No notes recorded in the last 8 weeks.';
+      notesContainer.innerText = 'No notes recorded in the last ' + weekCt + ' weeks.';
     } else {
       notesLog.forEach(n => {
         const item = document.createElement('div');
