@@ -36,6 +36,17 @@
       justify-content: center;
     }
 
+	table.rounded-table {
+		/* Critical settings for rounded corners */
+		border-collapse: separate;
+		border-spacing: 0;
+		border-radius: 10px;
+		overflow: hidden;
+		
+		/* Outer border and structure */
+		border: 1.5px solid #000;
+	}
+
     .app-container {
       width: 100%;
       max-width: 400px;
@@ -339,10 +350,11 @@
     }
 
     .summary-table {
-      width: 100%;
       border-collapse: collapse;
       margin-bottom: 16px;
       font-size: 0.8rem;
+	  table-layout: fixed;
+	  width: 100%;
     }
 
     .summary-table th, .summary-table td {
@@ -472,7 +484,7 @@
       <button class="nav-btn" onclick="changeMonth(-1)">❮</button>
       <div class="month-picker-title" onclick="toggleQuickMonthPicker()">
         <h2 id="monthTitle">Month View</h2>
-        <span style="font-size: 0.8rem;">▼</span>
+        <span id="monthDropDown" style="font-size: 0.8rem;">▲</span>
       </div>
       <button class="nav-btn" onclick="changeMonth(1)">❯</button>
     </div>
@@ -496,15 +508,15 @@
       <div class="summary-section-title-desc" id="trailingTitleDates" >DDDD - DDDD</div>
 		<div class="summary-sub-section">
 		  <div class="summary-sub-title">Flow Count by Med Week</div>
-		  <table class="summary-table">
+		  <table class="summary-table rounded-table">
 			<thead>
 			  <tr>
 				<th>Week</th>
-				<th>None</th>
-				<th>Spot</th>
-				<th>Lit</th>
-				<th>Med</th>
-				<th>Hvy</th>
+				<th style="width: 14.75%">None</th>
+				<th style="width: 14.75%">Spot</th>
+				<th style="width: 14.75%">Lit</th>
+				<th style="width: 14.75%">Med</th>
+				<th style="width: 14.75%">Hvy</th>
 			  </tr>
 			</thead>
 			<tbody id="flowTableBody"></tbody>
@@ -513,13 +525,13 @@
 
 		<div class="summary-sub-section">
 		  <div class="summary-sub-title">Top 3 Symptoms by Med Week</div>
-		  <table class="summary-table">
+		  <table class="summary-table rounded-table">
 			<thead>
 			  <tr>
 				<th>Week</th>
-				<th>1st</th>
-				<th>2nd</th>
-				<th>3rd</th>
+				<th style="width: 26.5%">1st</th>
+				<th style="width: 26.5%">2nd</th>
+				<th style="width: 26.5%">3rd</th>
 			  </tr>
 			</thead>
 			<tbody id="symptomsByWeekTableBody"></tbody>
@@ -762,9 +774,12 @@
     if (!isShowing) {
       populateQuickSelectors();
       container.classList.add('active');
+	  document.getElementById('monthDropDown').innerText = '▼';
     } else {
       container.classList.remove('active');
+	  document.getElementById('monthDropDown').innerText = '▲';
     }
+	
   }
 
   function populateQuickSelectors() {
