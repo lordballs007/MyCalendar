@@ -17,8 +17,15 @@
       --status-light: #fef08a;
       --status-medium: #eab308;
       --status-heavy: #f97316;
+	  --status-week4: #961231;
+	  --polka-pattern: 
+			radial-gradient(rgb(255, 255, 255) 16.8%, transparent 16.8%),
+			radial-gradient(rgb(255, 255, 255) 16.8%, transparent 16.8%);
+	  --polka-position: 0px 0px, 8px 8px;
+	  --polka-size: 14px 14px;
+	  --polka-bg-color: rgb(255, 209, 220);
     }
-
+	
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
@@ -111,6 +118,13 @@
     }
 
     .radio-btn.selected[data-val="None"] { background: var(--status-none); border-color: #a1a1aa; }
+	.radio-btn.selected[data-val="Spotting"] { 
+		  background-image: var(--polka-pattern);
+		  background-position: var(--polka-position);
+		  background-size: var(--polka-size);
+		  background-color: var(--polka-bg-color); 
+		  border-color: #a1a1aa; 
+		}
     .radio-btn.selected[data-val="Light"] { background: var(--status-light); border-color: #ca8a04; }
     .radio-btn.selected[data-val="Medium"] { background: var(--status-medium); border-color: #a16207; color: #fff; }
     .radio-btn.selected[data-val="Heavy"] { background: var(--status-heavy); border-color: #c2410c; color: #fff; }
@@ -314,6 +328,10 @@
       margin: 4px 0 10px 0;
 	}
 
+	.summary-sub-section {
+	  border-top: 1px solid #ccc;
+	}
+	
     .summary-sub-title {
       font-size: 0.9rem;
       font-weight: bold;
@@ -356,8 +374,9 @@
 
     .summary-note-item {
       margin-bottom: 6px;
+	  margin-left: 10px;
       padding-bottom: 6px;
-      border-bottom: 1px dashed #ccc;
+      border-top: 1px dashed #ccc;
     }
 
     /* Bottom Nav Bar */
@@ -424,7 +443,8 @@
     <!-- Flow -->
     <div class="section-title">Flow</div>
     <div class="radio-group" id="flowGroup">
-      <div class="radio-btn" onclick="setFlow('None')">None</div>
+      <!-- <div class="radio-btn" onclick="setFlow('None')">None</div> -->
+	  <div class="radio-btn" onclick="setFlow('Spotting')">Spotting</div>
       <div class="radio-btn" onclick="setFlow('Light')">Light</div>
       <div class="radio-btn" onclick="setFlow('Medium')">Medium</div>
       <div class="radio-btn" onclick="setFlow('Heavy')">Heavy</div>
@@ -474,38 +494,47 @@
       
       <div class="summary-section-title" id="trailingTitle" >Trailing # Weeks</div>
       <div class="summary-section-title-desc" id="trailingTitleDates" >DDDD - DDDD</div>
-      <div class="summary-sub-title">Flow Count by Week</div>
-      <table class="summary-table">
-        <thead>
-          <tr>
-            <th>Week</th>
-            <th>None</th>
-            <th>Low</th>
-            <th>Medium</th>
-            <th>High</th>
-          </tr>
-        </thead>
-        <tbody id="flowTableBody"></tbody>
-      </table>
+		<div class="summary-sub-section">
+		  <div class="summary-sub-title">Flow Count by Med Week</div>
+		  <table class="summary-table">
+			<thead>
+			  <tr>
+				<th>Week</th>
+				<th>None</th>
+				<th>Spot</th>
+				<th>Lit</th>
+				<th>Med</th>
+				<th>Hvy</th>
+			  </tr>
+			</thead>
+			<tbody id="flowTableBody"></tbody>
+		  </table>
+		</div>
 
-      <div class="summary-sub-title">Top 3 Symptoms by Med Week</div>
-      <table class="summary-table">
-        <thead>
-          <tr>
-            <th>Week</th>
-            <th>1st</th>
-            <th>2nd</th>
-            <th>3rd</th>
-          </tr>
-        </thead>
-        <tbody id="symptomsByWeekTableBody"></tbody>
-      </table>
+		<div class="summary-sub-section">
+		  <div class="summary-sub-title">Top 3 Symptoms by Med Week</div>
+		  <table class="summary-table">
+			<thead>
+			  <tr>
+				<th>Week</th>
+				<th>1st</th>
+				<th>2nd</th>
+				<th>3rd</th>
+			  </tr>
+			</thead>
+			<tbody id="symptomsByWeekTableBody"></tbody>
+		  </table>
+		</div>
 
-      <div class="summary-sub-title">Top 3 Symptoms Overall</div>
-      <ol class="summary-list" id="topSymptomsOverallList" style="margin-left: 10px"></ol>
-
-      <div class="summary-sub-title">All Notes:</div>
-      <div class="summary-notes-list" id="allNotesList" style="margin-left: 10px"></div>
+		<div class="summary-sub-section">
+		  <div class="summary-sub-title">Top 3 Symptoms Overall</div>
+		  <ol class="summary-list" id="topSymptomsOverallList" style="margin-left: 10px"></ol>
+		</div>
+		
+		<div class="summary-sub-section">
+		  <div class="summary-sub-title">All Notes:</div>
+		  <div class="summary-notes-list" id="allNotesList"></div>
+		</div>
     </div>
   </div>
 
@@ -518,9 +547,9 @@
 
 <script>
   const symptomOptions = [
-    "Acne", "Bloating", "Brain Fog", "Cramps/Pain", "Discomfort",
-    "Dizziness", "Fatigue", "Headache", "Irritability", "Nausea",
-    "Night sweats", "Poor Sleep", "Vivid dreams"
+    "Acne", "Anxiety", "Bladder Cramps", "Bloating", "Brain Fog", "Cramps", "Depression",
+	"Discomfort", "Dizziness", "Fatigue", "Headache", "Insomnia", "Irritability", "Low Appetite",
+    "Nausea", "Night sweats", "Overeating", "Poor Sleep"
   ];
 
   let selectedDate = new Date(); // Default today
@@ -624,7 +653,11 @@
     const key = getKey(selectedDate);
     const logs = getLogs();
     if (!logs[key]) logs[key] = { medWeek: null, flow: 'None', symptoms: [], notes: '' };
-    logs[key].flow = val;
+	if (logs[key].flow === val) {
+		logs[key].flow = 'None';
+	} else {
+		logs[key].flow = val;
+	};
     localStorage.setItem('symptom_logs', JSON.stringify(logs));
     initDayView();
   }
@@ -682,17 +715,29 @@
       const key = getKey(dateObj);
       const dayLog = logs[key];
       const flow = dayLog ? dayLog.flow : 'None';
+	  const medWeek = dayLog ? dayLog.medWeek : 0;
+	  const dayEl = document.createElement('div');
 
       let bg = 'var(--status-none-cal)';
+	  if (flow === 'Spotting') {
+			bg = 'var(--polka-bg-color)';
+			dayEl.style.backgroundImage = 'var(--polka-pattern)';
+			dayEl.style.backgroundPosition = 'var(--polka-position)';
+			dayEl.style.backgroundSize = 'var(--polka-size)';
+		}
       if (flow === 'Light') bg = 'var(--status-light)';
       if (flow === 'Medium') bg = 'var(--status-medium)';
       if (flow === 'Heavy') bg = 'var(--status-heavy)';
 
-      const dayEl = document.createElement('div');
       dayEl.className = 'cal-day';
       dayEl.innerText = d;
       dayEl.style.backgroundColor = bg;
       if (flow === 'Medium' || flow === 'Heavy') dayEl.style.color = '#fff';
+	  
+	  if (medWeek === 4) {
+		dayEl.style.borderColor = 'var(--status-week4)';
+		dayEl.style.borderWidth = '8px';
+	  }
 
       dayEl.onclick = () => {
         selectedDate = dateObj;
@@ -725,6 +770,7 @@
   function populateQuickSelectors() {
     const monthSel = document.getElementById('quickMonth');
     const yearSel = document.getElementById('quickYear');
+	const today = new Date();
     
     monthSel.innerHTML = '';
     yearSel.innerHTML = '';
@@ -738,7 +784,7 @@
       monthSel.appendChild(opt);
     });
 
-    for (let y = 2026; y <= 2028; y++) {
+    for (let y = today.getFullYear()-2; y <= today.getFullYear()+2; y++) {
       const opt = document.createElement('option');
       opt.value = y;
       opt.innerText = y;
@@ -757,14 +803,13 @@
   function renderSummaryView() {
     const logs = getLogs();
     const today = new Date();
-	console.log("Today = ",today);
 	const weekCt = 12;
 
     // Data Aggregation structures for trailing 12 Weeks / 84 days
-    const flowByWeek = { 1: { None: 0, Light: 0, Medium: 0, Heavy: 0 },
-                             2: { None: 0, Light: 0, Medium: 0, Heavy: 0 },
-                             3: { None: 0, Light: 0, Medium: 0, Heavy: 0 },
-                             4: { None: 0, Light: 0, Medium: 0, Heavy: 0 } };
+    const flowByWeek = 	{ 1: { None: 0, Spotting: 0, Light: 0, Medium: 0, Heavy: 0 },
+                          2: { None: 0, Spotting: 0, Light: 0, Medium: 0, Heavy: 0 },
+                          3: { None: 0, Spotting: 0, Light: 0, Medium: 0, Heavy: 0 },
+                          4: { None: 0, Spotting: 0, Light: 0, Medium: 0, Heavy: 0 } };
 
     const symptomsByWeek = { 1: {}, 2: {}, 3: {}, 4: {} };
     const overallSymptoms = {};
@@ -772,11 +817,13 @@
 
 	let startDate = new Date();
 	const daysAgo = (weekCt*7);
+	
     for (let i = 0; i < daysAgo; i++) {
 	  startDate = new Date();
 	  startDate.setDate(today.getDate() - i);
       const key = getKey(startDate);
       const dayLog = logs[key];
+	  console.log("dayLog",dayLog);
 
       if (dayLog) {
         const weekNum = dayLog.medWeek;
@@ -819,6 +866,7 @@
       row.innerHTML = `
         <td>${w}</td>
         <td>${flowByWeek[w].None}</td>
+		<td>${flowByWeek[w].Spotting}</td>
         <td>${flowByWeek[w].Light}</td>
         <td>${flowByWeek[w].Medium}</td>
         <td>${flowByWeek[w].Heavy}</td>
@@ -859,7 +907,7 @@
       topOverallList.innerHTML = '<li>No symptoms logged yet.</li>';
     } else {
       sortedOverall.forEach(([sym, count]) => {
-        topOverallList.innerHTML += `<li>${sym} (x${count})</li>`;
+        topOverallList.innerHTML += `<li>${sym} (${count})</li>`;
       });
     }
 
