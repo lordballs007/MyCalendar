@@ -47,6 +47,13 @@
 		border: 1.5px solid #000;
 	}
 
+	.layout-wrapper {
+	  display: block; /* Forces elements inside to stack vertically */
+	  width: 100%;
+	  max-width: 400px;
+	  margin: 0 auto; /* Centers the entire stack on your screen */
+	}
+
     .app-container {
       width: 100%;
       max-width: 400px;
@@ -60,6 +67,15 @@
       flex-direction: column;
       position: relative;
     }
+
+	.app-footer-text {
+	  width: 100%;
+	  max-width: 400px;       /* Matches your app container width */
+	  margin: 15px auto 0;    /* 15px space on top, auto centers it if the container is centered */
+	  text-align: center;     /* Centers the text inside the div */
+	  font-size: 10px;        /* Styled like standard footer helper text */
+	  color: #666;            /* Secondary muted text color */
+	}
 
     .header {
       display: flex;
@@ -432,131 +448,137 @@
   </style>
 </head>
 <body>
-
-<div class="app-container">
-  
-  <!-- DAY VIEW -->
-  <div id="dayView" class="view-panel active">
-    <div class="header">
-      <button class="nav-btn" onclick="navigateDay(-1)">❮</button>
-      <h2 id="currentDateTitle">Sun, Sep 13, 2026</h2>
-      <button class="nav-btn" onclick="navigateDay(1)">❯</button>
-    </div>
-
-    <!-- Medication Cycle Week (Independent Tracker) -->
-    <div class="section-title">Med Week</div>
-    <div class="week-num-group" id="weekNumGroup">
-      <div class="week-num-btn" onclick="setMedWeek(1)">1</div>
-      <div class="week-num-btn" onclick="setMedWeek(2)">2</div>
-      <div class="week-num-btn" onclick="setMedWeek(3)">3</div>
-      <div class="week-num-btn" onclick="setMedWeek(4)">4</div>
-    </div>
-
-    <!-- Flow -->
-    <div class="section-title">Flow</div>
-    <div class="radio-group" id="flowGroup">
-      <!-- <div class="radio-btn" onclick="setFlow('None')">None</div> -->
-	  <div class="radio-btn" onclick="setFlow('Spotting')">Spotting</div>
-      <div class="radio-btn" onclick="setFlow('Light')">Light</div>
-      <div class="radio-btn" onclick="setFlow('Medium')">Medium</div>
-      <div class="radio-btn" onclick="setFlow('Heavy')">Heavy</div>
-    </div>
-
-    <!-- Symptoms (Custom Multi-Select) -->
-    <div class="section-title">Symptoms</div>
-    <div class="custom-multiselect" id="customMultiselect">
-      <div class="dropdown-btn" onclick="toggleSymptomMenu(event)">
-        <span>Select Symptoms...</span>
-        <span style="font-size: 0.8rem;">▼</span>
-      </div>
-      <div class="dropdown-menu" id="dropdownMenu"></div>
-      <div class="selected-chips" id="selectedChips"></div>
-    </div>
-
-    <!-- Daily Notes -->
-    <div class="section-title">Daily Notes</div>
-    <textarea id="dailyNotes" placeholder="Add notes for your doctor..." oninput="saveNotes()"></textarea>
-  </div>
-
-  <!-- MONTH VIEW -->
-  <div id="monthView" class="view-panel">
-    <div class="header">
-      <button class="nav-btn" onclick="changeMonth(-1)">❮</button>
-      <div class="month-picker-title" onclick="toggleQuickMonthPicker()">
-        <h2 id="monthTitle">Month View</h2>
-        <span id="monthDropDown" style="font-size: 0.8rem;">▲</span>
-      </div>
-      <button class="nav-btn" onclick="changeMonth(1)">❯</button>
-    </div>
-
-    <div class="quick-month-select" id="quickMonthSelect">
-      <select id="quickMonth" onchange="applyQuickMonth()"></select>
-      <select id="quickYear" onchange="applyQuickMonth()"></select>
-    </div>
-
-    <div class="calendar-grid" id="calendarGrid"></div>
-
-    <button class="btn-generate-summary" onclick="toggleView('summary')">Generate Summary</button>
-  </div>
-
-  <!-- SUMMARY VIEW -->
-  <div id="summaryView" class="view-panel">
-    <div class="summary-container" id="summaryContainer">
-      <div class="summary-title">Summary Statistics</div>
-      
-      <div class="summary-section-title" id="trailingTitle" >Trailing # Weeks</div>
-      <div class="summary-section-title-desc" id="trailingTitleDates" >DDDD - DDDD</div>
-		<div class="summary-sub-section">
-		  <div class="summary-sub-title">Flow Count by Med Week</div>
-		  <table class="summary-table rounded-table">
-			<thead>
-			  <tr>
-				<th>Week</th>
-				<th style="width: 14.75%">None</th>
-				<th style="width: 14.75%">Spot</th>
-				<th style="width: 14.75%">Lit</th>
-				<th style="width: 14.75%">Med</th>
-				<th style="width: 14.75%">Hvy</th>
-			  </tr>
-			</thead>
-			<tbody id="flowTableBody"></tbody>
-		  </table>
+<div class="layout-wrapper">
+	<div class="app-container">
+	  
+	  <!-- DAY VIEW -->
+	  <div id="dayView" class="view-panel active">
+		<div class="header">
+		  <button class="nav-btn" onclick="navigateDay(-1)">❮</button>
+		  <h2 id="currentDateTitle">Sun, Sep 13, 2026</h2>
+		  <button class="nav-btn" onclick="navigateDay(1)">❯</button>
 		</div>
 
-		<div class="summary-sub-section">
-		  <div class="summary-sub-title">Top 3 Symptoms by Med Week</div>
-		  <table class="summary-table rounded-table">
-			<thead>
-			  <tr>
-				<th>Week</th>
-				<th style="width: 26.5%">1st</th>
-				<th style="width: 26.5%">2nd</th>
-				<th style="width: 26.5%">3rd</th>
-			  </tr>
-			</thead>
-			<tbody id="symptomsByWeekTableBody"></tbody>
-		  </table>
+		<!-- Medication Cycle Week (Independent Tracker) -->
+		<div class="section-title">Med Week</div>
+		<div class="week-num-group" id="weekNumGroup">
+		  <div class="week-num-btn" onclick="setMedWeek(1)">1</div>
+		  <div class="week-num-btn" onclick="setMedWeek(2)">2</div>
+		  <div class="week-num-btn" onclick="setMedWeek(3)">3</div>
+		  <div class="week-num-btn" onclick="setMedWeek(4)">4</div>
 		</div>
 
-		<div class="summary-sub-section">
-		  <div class="summary-sub-title">Top 3 Symptoms Overall</div>
-		  <ol class="summary-list" id="topSymptomsOverallList" style="margin-left: 10px"></ol>
+		<!-- Flow -->
+		<div class="section-title">Flow</div>
+		<div class="radio-group" id="flowGroup">
+		  <!-- <div class="radio-btn" onclick="setFlow('None')">None</div> -->
+		  <div class="radio-btn" onclick="setFlow('Spotting')">Spotting</div>
+		  <div class="radio-btn" onclick="setFlow('Light')">Light</div>
+		  <div class="radio-btn" onclick="setFlow('Medium')">Medium</div>
+		  <div class="radio-btn" onclick="setFlow('Heavy')">Heavy</div>
 		</div>
-		
-		<div class="summary-sub-section">
-		  <div class="summary-sub-title">All Notes:</div>
-		  <div class="summary-notes-list" id="allNotesList"></div>
+
+		<!-- Symptoms (Custom Multi-Select) -->
+		<div class="section-title">Symptoms</div>
+		<div class="custom-multiselect" id="customMultiselect">
+		  <div class="dropdown-btn" onclick="toggleSymptomMenu(event)">
+			<span>Select Symptoms...</span>
+			<span style="font-size: 0.8rem;">▼</span>
+		  </div>
+		  <div class="dropdown-menu" id="dropdownMenu"></div>
+		  <div class="selected-chips" id="selectedChips"></div>
 		</div>
-    </div>
-  </div>
 
-  <!-- BOTTOM NAV BAR -->
-  <div class="nav-bar">
-    <button class="center-nav-btn" id="centerNavBtn" onclick="handleCenterNavClick()">📅</button>
-  </div>
+		<!-- Daily Notes -->
+		<div class="section-title">Daily Notes</div>
+		<textarea id="dailyNotes" placeholder="Add notes for your doctor..." oninput="saveNotes()"></textarea>
+	  </div>
 
+	  <!-- MONTH VIEW -->
+	  <div id="monthView" class="view-panel">
+		<div class="header">
+		  <button class="nav-btn" onclick="changeMonth(-1)">❮</button>
+		  <div class="month-picker-title" onclick="toggleQuickMonthPicker()">
+			<h2 id="monthTitle">Month View</h2>
+			<span id="monthDropDown" style="font-size: 0.8rem;">▲</span>
+		  </div>
+		  <button class="nav-btn" onclick="changeMonth(1)">❯</button>
+		</div>
+
+		<div class="quick-month-select" id="quickMonthSelect">
+		  <select id="quickMonth" onchange="applyQuickMonth()"></select>
+		  <select id="quickYear" onchange="applyQuickMonth()"></select>
+		</div>
+
+		<div class="calendar-grid" id="calendarGrid"></div>
+
+		<button class="btn-generate-summary" onclick="toggleView('summary')">Generate Summary</button>
+	  </div>
+
+	  <!-- SUMMARY VIEW -->
+	  <div id="summaryView" class="view-panel">
+		<div class="summary-container" id="summaryContainer">
+		  <div class="summary-title">Summary Statistics</div>
+		  
+		  <div class="summary-section-title" id="trailingTitle" >Trailing # Weeks</div>
+		  <div class="summary-section-title-desc" id="trailingTitleDates" >DDDD - DDDD</div>
+			<div class="summary-sub-section">
+			  <div class="summary-sub-title">Flow Count by Med Week</div>
+			  <table class="summary-table rounded-table">
+				<thead>
+				  <tr>
+					<th>Week</th>
+					<th style="width: 14.75%">None</th>
+					<th style="width: 14.75%">Spot</th>
+					<th style="width: 14.75%">Lit</th>
+					<th style="width: 14.75%">Med</th>
+					<th style="width: 14.75%">Hvy</th>
+				  </tr>
+				</thead>
+				<tbody id="flowTableBody"></tbody>
+			  </table>
+			</div>
+
+			<div class="summary-sub-section">
+			  <div class="summary-sub-title">Top 3 Symptoms by Med Week</div>
+			  <table class="summary-table rounded-table">
+				<thead>
+				  <tr>
+					<th>Week</th>
+					<th style="width: 26.5%">1st</th>
+					<th style="width: 26.5%">2nd</th>
+					<th style="width: 26.5%">3rd</th>
+				  </tr>
+				</thead>
+				<tbody id="symptomsByWeekTableBody"></tbody>
+			  </table>
+			</div>
+
+			<div class="summary-sub-section">
+			  <div class="summary-sub-title">Top 3 Symptoms Overall</div>
+			  <ol class="summary-list" id="topSymptomsOverallList" style="margin-left: 10px"></ol>
+			</div>
+			
+			<div class="summary-sub-section">
+			  <div class="summary-sub-title">All Notes:</div>
+			  <div class="summary-notes-list" id="allNotesList"></div>
+			</div>
+		</div>
+	  </div>
+
+	  <!-- BOTTOM NAV BAR -->
+	  <div class="nav-bar">
+		<button class="center-nav-btn" id="centerNavBtn" onclick="handleCenterNavClick()">📅</button>
+	  </div>
+	</div><br>
+	<div class="app-footer-text">
+		<span>
+			Data is stored locally on your device, <b>unencrypted</b>.<br>
+			<b>Use at your own risk!</b> Not meant for PHI.<br>
+			NSS | Last Updated: 8/7/26
+		</span>
+	</div>
 </div>
-
 <script>
   const symptomOptions = [
     "Acne", "Anxiety", "Bladder Cramps", "Bloating", "Brain Fog", "Cramps", "Depression",
@@ -936,6 +958,7 @@
         const item = document.createElement('div');
         item.className = 'summary-note-item';
         item.innerHTML = `<strong>${n.dateStr}:</strong> ${n.text}`;
+
         notesContainer.appendChild(item);
       });
     }
