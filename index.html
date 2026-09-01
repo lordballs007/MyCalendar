@@ -15,17 +15,17 @@
       --primary: #2b6cb0;
       /* Status Colors */
       --status-none-cal: #ffffff;
-	  --status-none: #d5e6f7;
+      --status-none: #d5e6f7;
       --status-light: #fef08a;
       --status-medium: #eab308;
       --status-heavy: #f97316;
-	  --status-week4: #961231;
-	  --polka-pattern: 
+      --status-week4: #961231;
+      --polka-pattern: 
 			radial-gradient(rgb(255, 255, 255) 16.8%, transparent 16.8%),
 			radial-gradient(rgb(255, 255, 255) 16.8%, transparent 16.8%);
-	  --polka-position: 0px 0px, 8px 8px;
-	  --polka-size: 14px 14px;
-	  --polka-bg-color: rgb(255, 209, 220);
+      --polka-position: 0px 0px, 8px 8px;
+      --polka-size: 14px 14px;
+      --polka-bg-color: rgb(255, 209, 220);
     }
 	
     body {
@@ -38,23 +38,23 @@
       justify-content: center;
     }
 
-	table.rounded-table {
-		/* Critical settings for rounded corners */
-		border-collapse: separate;
-		border-spacing: 0;
-		border-radius: 10px;
-		overflow: hidden;
-		
-		/* Outer border and structure */
-		border: 1.5px solid #000;
-	}
+    table.rounded-table {
+      /* Critical settings for rounded corners */
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 10px;
+      overflow: hidden;
+      
+      /* Outer border and structure */
+      border: 1.5px solid #000;
+    }
 
-	.layout-wrapper {
-	  display: block; /* Forces elements inside to stack vertically */
-	  width: 100%;
-	  max-width: 400px;
-	  margin: 0 auto; /* Centers the entire stack on your screen */
-	}
+    .layout-wrapper {
+      display: block; /* Forces elements inside to stack vertically */
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto; /* Centers the entire stack on your screen */
+    }
 
     .app-container {
       width: 100%;
@@ -70,14 +70,14 @@
       position: relative;
     }
 
-	.app-footer-text {
-	  width: 100%;
-	  max-width: 400px;       /* Matches your app container width */
-	  margin: 15px auto 0;    /* 15px space on top, auto centers it if the container is centered */
-	  text-align: center;     /* Centers the text inside the div */
-	  font-size: 10px;        /* Styled like standard footer helper text */
-	  color: #666;            /* Secondary muted text color */
-	}
+    .app-footer-text {
+      width: 100%;
+      max-width: 400px;       /* Matches your app container width */
+      margin: 15px auto 0;    /* 15px space on top, auto centers it if the container is centered */
+      text-align: center;     /* Centers the text inside the div */
+      font-size: 10px;        /* Styled like standard footer helper text */
+      color: #666;            /* Secondary muted text color */
+    }
 
     .header {
       display: flex;
@@ -147,13 +147,13 @@
     }
 
     .radio-btn.selected[data-val="None"] { background: var(--status-none); border-color: #a1a1aa; }
-	.radio-btn.selected[data-val="Spotting"] { 
-		  background-image: var(--polka-pattern);
-		  background-position: var(--polka-position);
-		  background-size: var(--polka-size);
-		  background-color: var(--polka-bg-color); 
-		  border-color: #a1a1aa; 
-		}
+    .radio-btn.selected[data-val="Spotting"] { 
+      background-image: var(--polka-pattern);
+      background-position: var(--polka-position);
+      background-size: var(--polka-size);
+      background-color: var(--polka-bg-color); 
+      border-color: #a1a1aa; 
+    }
     .radio-btn.selected[data-val="Light"] { background: var(--status-light); border-color: #ca8a04; }
     .radio-btn.selected[data-val="Medium"] { background: var(--status-medium); border-color: #a16207; color: #fff; }
     .radio-btn.selected[data-val="Heavy"] { background: var(--status-heavy); border-color: #c2410c; color: #fff; }
@@ -351,15 +351,15 @@
       margin: 16px 0 4px 0;
     }
 	
-	.summary-section-title-desc {
-	  font-size: 0.95rem;
+    .summary-section-title-desc {
+      font-size: 0.95rem;
       font-weight: normal;
       margin: 4px 0 10px 0;
-	}
+    }
 
-	.summary-sub-section {
-	  border-top: 1px solid #ccc;
-	}
+    .summary-sub-section {
+      border-top: 1px solid #ccc;
+    }
 	
     .summary-sub-title {
       font-size: 0.9rem;
@@ -371,8 +371,8 @@
       border-collapse: collapse;
       margin-bottom: 16px;
       font-size: 0.8rem;
-	  table-layout: fixed;
-	  width: 100%;
+      table-layout: fixed;
+      width: 100%;
     }
 
     .summary-table th, .summary-table td {
@@ -404,7 +404,7 @@
 
     .summary-note-item {
       margin-bottom: 6px;
-	  margin-left: 10px;
+      margin-left: 10px;
       padding-bottom: 6px;
       border-top: 1px dashed #ccc;
     }
@@ -451,140 +451,140 @@
 </head>
 <body>
 <div class="layout-wrapper">
-	<div class="app-container">
-	  
-	  <!-- DAY VIEW -->
-	  <div id="dayView" class="view-panel active">
-		<div class="header">
-		  <button class="nav-btn" onclick="navigateDay(-1)">❮</button>
-		  <h2 id="currentDateTitle">Sun, Sep 13, 2026</h2>
-		  <button class="nav-btn" onclick="navigateDay(1)">❯</button>
-		</div>
+  <div class="app-container">
+    
+    <!-- DAY VIEW -->
+    <div id="dayView" class="view-panel active">
+      <div class="header">
+        <button class="nav-btn" onclick="navigateDay(-1)">❮</button>
+        <h2 id="currentDateTitle">Sun, Sep 13, 2026</h2>
+        <button class="nav-btn" onclick="navigateDay(1)">❯</button>
+      </div>
 
-		<!-- Medication Cycle Week (Independent Tracker) -->
-		<div class="section-title">Med Week</div>
-		<div class="week-num-group" id="weekNumGroup">
-		  <div class="week-num-btn" onclick="setMedWeek(1)">1</div>
-		  <div class="week-num-btn" onclick="setMedWeek(2)">2</div>
-		  <div class="week-num-btn" onclick="setMedWeek(3)">3</div>
-		  <div class="week-num-btn" onclick="setMedWeek(4)">4</div>
-		</div>
+      <!-- Medication Cycle Week (Independent Tracker) -->
+      <div class="section-title">Med Week</div>
+      <div class="week-num-group" id="weekNumGroup">
+        <div class="week-num-btn" onclick="setMedWeek(1)">1</div>
+        <div class="week-num-btn" onclick="setMedWeek(2)">2</div>
+        <div class="week-num-btn" onclick="setMedWeek(3)">3</div>
+        <div class="week-num-btn" onclick="setMedWeek(4)">4</div>
+      </div>
 
-		<!-- Flow -->
-		<div class="section-title">Flow</div>
-		<div class="radio-group" id="flowGroup">
-		  <!-- <div class="radio-btn" onclick="setFlow('None')">None</div> -->
-		  <div class="radio-btn" onclick="setFlow('Spotting')">Spotting</div>
-		  <div class="radio-btn" onclick="setFlow('Light')">Light</div>
-		  <div class="radio-btn" onclick="setFlow('Medium')">Medium</div>
-		  <div class="radio-btn" onclick="setFlow('Heavy')">Heavy</div>
-		</div>
+      <!-- Flow -->
+      <div class="section-title">Flow</div>
+      <div class="radio-group" id="flowGroup">
+        <!-- <div class="radio-btn" onclick="setFlow('None')">None</div> -->
+        <div class="radio-btn" onclick="setFlow('Spotting')">Spotting</div>
+        <div class="radio-btn" onclick="setFlow('Light')">Light</div>
+        <div class="radio-btn" onclick="setFlow('Medium')">Medium</div>
+        <div class="radio-btn" onclick="setFlow('Heavy')">Heavy</div>
+      </div>
 
-		<!-- Symptoms (Custom Multi-Select) -->
-		<div class="section-title">Symptoms</div>
-		<div class="custom-multiselect" id="customMultiselect">
-		  <div class="dropdown-btn" onclick="toggleSymptomMenu(event)">
-			<span>Select Symptoms...</span>
-			<span style="font-size: 0.8rem;">▼</span>
-		  </div>
-		  <div class="dropdown-menu" id="dropdownMenu"></div>
-		  <div class="selected-chips" id="selectedChips"></div>
-		</div>
+      <!-- Symptoms (Custom Multi-Select) -->
+      <div class="section-title">Symptoms</div>
+      <div class="custom-multiselect" id="customMultiselect">
+        <div class="dropdown-btn" onclick="toggleSymptomMenu(event)">
+          <span>Select Symptoms...</span>
+          <span style="font-size: 0.8rem;">▼</span>
+        </div>
+        <div class="dropdown-menu" id="dropdownMenu"></div>
+        <div class="selected-chips" id="selectedChips"></div>
+      </div>
 
-		<!-- Daily Notes -->
-		<div class="section-title">Daily Notes</div>
-		<textarea id="dailyNotes" placeholder="Add notes for your doctor..." oninput="saveNotes()"></textarea>
-	  </div>
+      <!-- Daily Notes -->
+      <div class="section-title">Daily Notes</div>
+      <textarea id="dailyNotes" placeholder="Add notes for your doctor..." oninput="saveNotes()"></textarea>
+    </div>
 
-	  <!-- MONTH VIEW -->
-	  <div id="monthView" class="view-panel">
-		<div class="header">
-		  <button class="nav-btn" onclick="changeMonth(-1)">❮</button>
-		  <div class="month-picker-title" onclick="toggleQuickMonthPicker()">
-			<h2 id="monthTitle">Month View</h2>
-			<span id="monthDropDown" style="font-size: 0.8rem;">▲</span>
-		  </div>
-		  <button class="nav-btn" onclick="changeMonth(1)">❯</button>
-		</div>
+    <!-- MONTH VIEW -->
+    <div id="monthView" class="view-panel">
+      <div class="header">
+        <button class="nav-btn" onclick="changeMonth(-1)">❮</button>
+        <div class="month-picker-title" onclick="toggleQuickMonthPicker()">
+          <h2 id="monthTitle">Month View</h2>
+          <span id="monthDropDown" style="font-size: 0.8rem;">▲</span>
+        </div>
+        <button class="nav-btn" onclick="changeMonth(1)">❯</button>
+      </div>
 
-		<div class="quick-month-select" id="quickMonthSelect">
-		  <select id="quickMonth" onchange="applyQuickMonth()"></select>
-		  <select id="quickYear" onchange="applyQuickMonth()"></select>
-		</div>
+      <div class="quick-month-select" id="quickMonthSelect">
+        <select id="quickMonth" onchange="applyQuickMonth()"></select>
+        <select id="quickYear" onchange="applyQuickMonth()"></select>
+      </div>
 
-		<div class="calendar-grid" id="calendarGrid"></div>
+      <div class="calendar-grid" id="calendarGrid"></div>
 
-		<button class="btn-generate-summary" onclick="toggleView('summary')">Generate Summary</button>
-	  </div>
+      <button class="btn-generate-summary" onclick="toggleView('summary')">Generate Summary</button>
+    </div>
 
-	  <!-- SUMMARY VIEW -->
-	  <div id="summaryView" class="view-panel">
-		<div class="summary-container" id="summaryContainer">
-		  <div class="summary-title">Summary Statistics</div>
-		  
-		  <div class="summary-section-title" id="trailingTitle" >Trailing # Weeks</div>
-		  <div class="summary-section-title-desc" id="trailingTitleDates" >DDDD - DDDD</div>
-			<div class="summary-sub-section">
-			  <div class="summary-sub-title">Flow Count by Med Week</div>
-			  <table class="summary-table rounded-table">
-				<thead>
-				  <tr>
-					<th>Week</th>
-					<th style="width: 14.75%">None</th>
-					<th style="width: 14.75%">Spot</th>
-					<th style="width: 14.75%">Lit</th>
-					<th style="width: 14.75%">Med</th>
-					<th style="width: 14.75%">Hvy</th>
-				  </tr>
-				</thead>
-				<tbody id="flowTableBody"></tbody>
-			  </table>
-			</div>
+    <!-- SUMMARY VIEW -->
+    <div id="summaryView" class="view-panel">
+      <div class="summary-container" id="summaryContainer">
+        <div class="summary-title">Summary Statistics</div>
+        
+        <div class="summary-section-title" id="trailingTitle" >Trailing # Weeks</div>
+        <div class="summary-section-title-desc" id="trailingTitleDates" >DDDD - DDDD</div>
+        <div class="summary-sub-section">
+          <div class="summary-sub-title">Flow Count by Med Week</div>
+          <table class="summary-table rounded-table">
+            <thead>
+              <tr>
+                <th>Week</th>
+                <th style="width: 14.75%">None</th>
+                <th style="width: 14.75%">Spot</th>
+                <th style="width: 14.75%">Lit</th>
+                <th style="width: 14.75%">Med</th>
+                <th style="width: 14.75%">Hvy</th>
+              </tr>
+            </thead>
+            <tbody id="flowTableBody"></tbody>
+          </table>
+        </div>
 
-			<div class="summary-sub-section">
-			  <div class="summary-sub-title">Top 3 Symptoms by Med Week</div>
-			  <table class="summary-table rounded-table">
-				<thead>
-				  <tr>
-					<th>Week</th>
-					<th style="width: 26.5%">1st</th>
-					<th style="width: 26.5%">2nd</th>
-					<th style="width: 26.5%">3rd</th>
-				  </tr>
-				</thead>
-				<tbody id="symptomsByWeekTableBody"></tbody>
-			  </table>
-			</div>
+        <div class="summary-sub-section">
+          <div class="summary-sub-title">Top 3 Symptoms by Med Week</div>
+          <table class="summary-table rounded-table">
+            <thead>
+              <tr>
+                <th>Week</th>
+                <th style="width: 26.5%">1st</th>
+                <th style="width: 26.5%">2nd</th>
+                <th style="width: 26.5%">3rd</th>
+              </tr>
+            </thead>
+            <tbody id="symptomsByWeekTableBody"></tbody>
+          </table>
+        </div>
 
-			<div class="summary-sub-section">
-			  <div class="summary-sub-title">Top 3 Symptoms Overall</div>
-			  <ol class="summary-list" id="topSymptomsOverallList" style="margin-left: 10px"></ol>
-			</div>
-			
-			<div class="summary-sub-section">
-			  <div class="summary-sub-title">All Notes:</div>
-			  <div class="summary-notes-list" id="allNotesList"></div>
-			</div>
-		</div>
-	  </div>
+        <div class="summary-sub-section">
+          <div class="summary-sub-title">Top 3 Symptoms Overall</div>
+          <ol class="summary-list" id="topSymptomsOverallList" style="margin-left: 10px"></ol>
+        </div>
+        
+        <div class="summary-sub-section">
+          <div class="summary-sub-title">All Notes:</div>
+          <div class="summary-notes-list" id="allNotesList"></div>
+        </div>
+      </div>
+    </div>
 
-	  <!-- BOTTOM NAV BAR -->
-	  <div class="nav-bar">
-		<button class="center-nav-btn" id="centerNavBtn" onclick="handleCenterNavClick()">📆</button>
-	  </div>
-	</div><br>
-	<div class="app-footer-text">
-		<span>
-			<a href="./Utilities">Data is stored locally on your device, <b>unencrypted</b>.</a><br>
-			<b>Use at your own risk!</b> Not meant for PHI.<br>
-			NSS | Last Updated: 8/7/26
-		</span>
-	</div>
+    <!-- BOTTOM NAV BAR -->
+    <div class="nav-bar">
+      <button class="center-nav-btn" id="centerNavBtn" onclick="handleCenterNavClick()">📆</button>
+    </div>
+  </div><br>
+  <div class="app-footer-text">
+    <span>
+      <a href="./Utilities">Data is stored locally on your device, <b>unencrypted</b>.</a><br>
+      <b>Use at your own risk!</b> Not meant for PHI.<br>
+      NSS | Last Updated: 8/7/26
+    </span>
+  </div>
 </div>
 <script>
   const symptomOptions = [
     "Acne", "Anxiety", "Bladder Cramps", "Bloating", "Brain Fog", "Cramps", "Depression",
-	"Discomfort", "Dizziness", "Fatigue", "Headache", "Insomnia", "Irritability", "Low Appetite",
+    "Discomfort", "Dizziness", "Fatigue", "Headache", "Insomnia", "Irritability", "Low Appetite",
     "Nausea", "Night sweats", "Overeating", "Poor Sleep"
   ];
 
@@ -595,8 +595,12 @@
     return JSON.parse(localStorage.getItem('symptom_logs') || '{}');
   }
 
+  // FIXED: Formats using local calendar date instead of UTC ISO string
   function getKey(date) {
-    return date.toISOString().split('T')[0];
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   function toggleSymptomMenu(e) {
@@ -689,11 +693,11 @@
     const key = getKey(selectedDate);
     const logs = getLogs();
     if (!logs[key]) logs[key] = { medWeek: null, flow: 'None', symptoms: [], notes: '' };
-	if (logs[key].flow === val) {
-		logs[key].flow = 'None';
-	} else {
-		logs[key].flow = val;
-	};
+    if (logs[key].flow === val) {
+      logs[key].flow = 'None';
+    } else {
+      logs[key].flow = val;
+    };
     localStorage.setItem('symptom_logs', JSON.stringify(logs));
     initDayView();
   }
@@ -751,16 +755,16 @@
       const key = getKey(dateObj);
       const dayLog = logs[key];
       const flow = dayLog ? dayLog.flow : 'None';
-	  const medWeek = dayLog ? dayLog.medWeek : 0;
-	  const dayEl = document.createElement('div');
+      const medWeek = dayLog ? dayLog.medWeek : 0;
+      const dayEl = document.createElement('div');
 
       let bg = 'var(--status-none-cal)';
-	  if (flow === 'Spotting') {
-			bg = 'var(--polka-bg-color)';
-			dayEl.style.backgroundImage = 'var(--polka-pattern)';
-			dayEl.style.backgroundPosition = 'var(--polka-position)';
-			dayEl.style.backgroundSize = 'var(--polka-size)';
-		}
+      if (flow === 'Spotting') {
+        bg = 'var(--polka-bg-color)';
+        dayEl.style.backgroundImage = 'var(--polka-pattern)';
+        dayEl.style.backgroundPosition = 'var(--polka-position)';
+        dayEl.style.backgroundSize = 'var(--polka-size)';
+      }
       if (flow === 'Light') bg = 'var(--status-light)';
       if (flow === 'Medium') bg = 'var(--status-medium)';
       if (flow === 'Heavy') bg = 'var(--status-heavy)';
@@ -769,11 +773,11 @@
       dayEl.innerText = d;
       dayEl.style.backgroundColor = bg;
       if (flow === 'Medium' || flow === 'Heavy') dayEl.style.color = '#fff';
-	  
-	  if (medWeek === 4) {
-		dayEl.style.borderColor = 'var(--status-week4)';
-		dayEl.style.borderWidth = '8px';
-	  }
+      
+      if (medWeek === 4) {
+        dayEl.style.borderColor = 'var(--status-week4)';
+        dayEl.style.borderWidth = '8px';
+      }
 
       dayEl.onclick = () => {
         selectedDate = dateObj;
@@ -798,18 +802,17 @@
     if (!isShowing) {
       populateQuickSelectors();
       container.classList.add('active');
-	  document.getElementById('monthDropDown').innerText = '▼';
+      document.getElementById('monthDropDown').innerText = '▼';
     } else {
       container.classList.remove('active');
-	  document.getElementById('monthDropDown').innerText = '▲';
+      document.getElementById('monthDropDown').innerText = '▲';
     }
-	
   }
 
   function populateQuickSelectors() {
     const monthSel = document.getElementById('quickMonth');
     const yearSel = document.getElementById('quickYear');
-	const today = new Date();
+    const today = new Date();
     
     monthSel.innerHTML = '';
     yearSel.innerHTML = '';
@@ -842,7 +845,7 @@
   function renderSummaryView() {
     const logs = getLogs();
     const today = new Date();
-	const weekCt = 12;
+    const weekCt = 12;
 
     // Data Aggregation structures for trailing 12 Weeks / 84 days
     const flowByWeek = 	{ 1: { None: 0, Spotting: 0, Light: 0, Medium: 0, Heavy: 0 },
@@ -854,15 +857,15 @@
     const overallSymptoms = {};
     const notesLog = [];
 
-	let startDate = new Date();
-	const daysAgo = (weekCt*7);
+    let startDate = new Date();
+    const daysAgo = (weekCt*7);
 	
     for (let i = 0; i < daysAgo; i++) {
-	  startDate = new Date();
-	  startDate.setDate(today.getDate() - i);
+      startDate = new Date();
+      startDate.setDate(today.getDate() - i);
       const key = getKey(startDate);
       const dayLog = logs[key];
-	  console.log("dayLog",dayLog);
+      console.log("dayLog",dayLog);
 
       if (dayLog) {
         const weekNum = dayLog.medWeek;
@@ -890,12 +893,12 @@
       }
     }
 
-	// 0. Update titles
-	const dateOpts = { weekday: 'short', year: '2-digit', month: 'numeric', day: 'numeric' };
-	const sumTitle = document.getElementById('trailingTitle');
-	sumTitle.innerHTML = 'Trailing ' + weekCt + ' Weeks';
-	const sumTitleDateDescr = document.getElementById('trailingTitleDates');
-	sumTitleDateDescr.innerHTML = startDate.toLocaleDateString('en-US', dateOpts) + ' - ' + today.toLocaleDateString('en-US', dateOpts);
+    // 0. Update titles
+    const dateOpts = { weekday: 'short', year: '2-digit', month: 'numeric', day: 'numeric' };
+    const sumTitle = document.getElementById('trailingTitle');
+    sumTitle.innerHTML = 'Trailing ' + weekCt + ' Weeks';
+    const sumTitleDateDescr = document.getElementById('trailingTitleDates');
+    sumTitleDateDescr.innerHTML = startDate.toLocaleDateString('en-US', dateOpts) + ' - ' + today.toLocaleDateString('en-US', dateOpts);
 
     // 1. Render Flow Count Table
     const sevTableBody = document.getElementById('flowTableBody');
@@ -905,7 +908,7 @@
       row.innerHTML = `
         <td>${w}</td>
         <td>${flowByWeek[w].None}</td>
-		<td>${flowByWeek[w].Spotting}</td>
+        <td>${flowByWeek[w].Spotting}</td>
         <td>${flowByWeek[w].Light}</td>
         <td>${flowByWeek[w].Medium}</td>
         <td>${flowByWeek[w].Heavy}</td>
