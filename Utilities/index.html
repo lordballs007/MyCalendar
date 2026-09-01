@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Symptom Tracker - Utilities</title>
+  <!-- Favicon Link -->
+  <link rel="icon" type="image/svg+xml" href="gemini-mc-svg.svg">
+  <title>Cycle Tracker</title>
   <style>
     :root {
       --bg: #f8f9fa;
@@ -11,9 +13,21 @@
       --text: #212529;
       --border: #ced4da;
       --primary: #2b6cb0;
-      --danger: #e53e3e;
+      /* Status Colors */
+      --status-none-cal: #ffffff;
+      --status-none: #d5e6f7;
+      --status-light: #fef08a;
+      --status-medium: #eab308;
+      --status-heavy: #f97316;
+      --status-week4: #961231;
+      --polka-pattern: 
+			radial-gradient(rgb(255, 255, 255) 16.8%, transparent 16.8%),
+			radial-gradient(rgb(255, 255, 255) 16.8%, transparent 16.8%);
+      --polka-position: 0px 0px, 8px 8px;
+      --polka-size: 14px 14px;
+      --polka-bg-color: rgb(255, 209, 220);
     }
-
+	
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
@@ -22,6 +36,24 @@
       padding: 16px;
       display: flex;
       justify-content: center;
+    }
+
+    table.rounded-table {
+      /* Critical settings for rounded corners */
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 10px;
+      overflow: hidden;
+      
+      /* Outer border and structure */
+      border: 1.5px solid #000;
+    }
+
+    .layout-wrapper {
+      display: block; /* Forces elements inside to stack vertically */
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto; /* Centers the entire stack on your screen */
     }
 
     .app-container {
@@ -35,180 +67,952 @@
       min-height: 620px;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
 
-    h2 {
-      margin: 0 0 20px 0;
-      font-size: 1.3rem;
-      font-weight: 700;
-      text-align: center;
-    }
-
-    .btn {
+    .app-footer-text {
       width: 100%;
-      padding: 12px;
-      margin-bottom: 12px;
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      background: #fff;
-      font-size: 0.95rem;
+      max-width: 400px;       /* Matches your app container width */
+      margin: 15px auto 0;    /* 15px space on top, auto centers it if the container is centered */
+      text-align: center;     /* Centers the text inside the div */
+      font-size: 10px;        /* Styled like standard footer helper text */
+      color: #666;            /* Secondary muted text color */
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    h2 { 
+      margin: 0; 
+      font-size: 1.2rem; 
+      font-weight: 700; 
+      text-align: center;
+      flex: 1;
+    }
+
+    .view-panel { flex: 1; display: none; }
+    .view-panel.active { display: block; }
+
+    .section-title {
       font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      color: var(--text);
+      margin: 16px 0 6px 0;
+      font-size: 0.95rem;
+      color: #2d3748;
+    }
+
+    /* Medication Week Cycle Selector (1, 2, 3, 4) */
+    .week-num-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .week-num-btn {
+      flex: 1;
       text-align: center;
-    }
-
-    .btn:active {
-      background: #edf2f7;
-    }
-
-    .btn-danger {
-      border-color: var(--danger);
-      color: var(--danger);
-      margin-top: 10px;
-    }
-
-    .btn-danger:active {
-      background: #fff5f5;
-    }
-
-    /* Output display area for text export */
-    #textOutput {
-      width: 100%;
-      height: 220px;
-      margin-top: 12px;
       padding: 10px;
       border: 2px solid var(--border);
-      border-radius: 10px;
-      box-sizing: border-box;
-      font-family: monospace;
-      font-size: 0.85rem;
-      background: #f7fafc;
-      white-space: pre-wrap;
-      overflow-y: auto;
-      display: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      background: #fff;
     }
 
-    /* Hidden file input for import */
-    #fileInput {
+    .week-num-btn.selected {
+      border-color: #2d3748;
+      background: #d5e6f7;
+    }
+
+    /* Single Select (Overall Flow) */
+    .radio-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .radio-btn {
+      flex: 1;
+      text-align: center;
+      padding: 10px 4px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 500;
+      background: #fff;
+      font-size: 0.9rem;
+    }
+
+    .radio-btn.selected[data-val="None"] { background: var(--status-none); border-color: #a1a1aa; }
+    .radio-btn.selected[data-val="Spotting"] { 
+      background-image: var(--polka-pattern);
+      background-position: var(--polka-position);
+      background-size: var(--polka-size);
+      background-color: var(--polka-bg-color); 
+      border-color: #a1a1aa; 
+    }
+    .radio-btn.selected[data-val="Light"] { background: var(--status-light); border-color: #ca8a04; }
+    .radio-btn.selected[data-val="Medium"] { background: var(--status-medium); border-color: #a16207; color: #fff; }
+    .radio-btn.selected[data-val="Heavy"] { background: var(--status-heavy); border-color: #c2410c; color: #fff; }
+
+    /* Custom Multi-Select Dropdown */
+    .custom-multiselect {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .dropdown-btn {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      background: white;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      box-sizing: border-box;
+    }
+
+    .dropdown-menu {
       display: none;
+      position: absolute;
+      top: 105%;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      max-height: 180px;
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .dropdown-menu.show {
+      display: block;
+    }
+
+    .dropdown-option {
+      padding: 10px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.95rem;
+      border-bottom: 1px solid #edf2f7;
+    }
+
+    .dropdown-option:last-child {
+      border-bottom: none;
+    }
+
+    .dropdown-option:hover {
+      background: #f7fafc;
+    }
+
+    .dropdown-option.selected {
+      background: #ebf8ff;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .selected-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      background: #ebf8ff;
+      color: var(--primary);
+      border: 1px solid #bee3f8;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chip .remove {
+      cursor: pointer;
+      font-weight: bold;
+      color: #718096;
+    }
+
+    /* Notes Area */
+    textarea {
+      width: 100%;
+      height: 80px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      box-sizing: border-box;
+      font-size: 0.95rem;
+      resize: none;
+    }
+
+    /* Month View Grid & Quick Select */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .cal-day-header { font-weight: bold; color: #718096; padding-bottom: 6px; font-size: 0.85rem; }
+
+    .cal-day {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .month-picker-title {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: #f7fafc;
+    }
+
+    .quick-month-select {
+      display: none;
+      margin-bottom: 16px;
+      gap: 8px;
+    }
+
+    .quick-month-select.active {
+      display: flex;
+    }
+
+    .quick-month-select select {
+      flex: 1;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 1rem;
+    }
+
+    .btn-generate-summary {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      background: #fff;
+      font-family: monospace;
+      font-size: 1.15rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      margin-bottom: 16px;
+    }
+
+    .btn-generate-summary:active {
+      background: #f7fafc;
+    }
+
+    /* Summary View Styling */
+    .summary-container {
+      font-family: monospace;
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .summary-title {
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin: 0 0 16px 0;
+    }
+
+    .summary-section-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin: 16px 0 4px 0;
+    }
+	
+    .summary-section-title-desc {
+      font-size: 0.95rem;
+      font-weight: normal;
+      margin: 4px 0 10px 0;
+    }
+
+    .summary-sub-section {
+      border-top: 1px solid #ccc;
+    }
+	
+    .summary-sub-title {
+      font-size: 0.9rem;
+      font-weight: bold;
+      margin: 8px 0 6px 0;
+    }
+
+    .summary-table {
+      border-collapse: collapse;
+      margin-bottom: 16px;
+      font-size: 0.8rem;
+      table-layout: fixed;
+      width: 100%;
+    }
+
+    .summary-table th, .summary-table td {
+      border: 1px solid #000;
+      padding: 6px 4px;
+      text-align: center;
+    }
+
+    .summary-table th {
+      background-color: #1e6b8b;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .summary-table td:first-child {
+      background-color: #cbebfa;
+    }
+
+    .summary-list {
+      margin: 0 0 16px 0;
+      padding-left: 20px;
+      font-size: 0.85rem;
+    }
+
+    .summary-notes-list {
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+    }
+
+    .summary-note-item {
+      margin-bottom: 6px;
+      margin-left: 10px;
+      padding-bottom: 6px;
+      border-top: 1px dashed #ccc;
+    }
+
+    /* Bottom Nav Bar */
+    .nav-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-top: 14px;
+      border-top: 1px solid #e2e8f0;
+      margin-top: auto;
+    }
+
+    .nav-btn {
+      background: #edf2f7;
+      color: #2d3748;
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .center-nav-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 52px;
+      height: 52px;
+      font-size: 1.4rem;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   </style>
 </head>
 <body>
+<div class="layout-wrapper">
+  <div class="app-container">
+    
+    <!-- DAY VIEW -->
+    <div id="dayView" class="view-panel active">
+      <div class="header">
+        <button class="nav-btn" onclick="navigateDay(-1)">❮</button>
+        <h2 id="currentDateTitle">Sun, Sep 13, 2026</h2>
+        <button class="nav-btn" onclick="navigateDay(1)">❯</button>
+      </div>
 
-<div class="app-container">
-  <h2>Utilities</h2>
+      <!-- Medication Cycle Week (Independent Tracker) -->
+      <div class="section-title">Med Week</div>
+      <div class="week-num-group" id="weekNumGroup">
+        <div class="week-num-btn" onclick="setMedWeek(1)">1</div>
+        <div class="week-num-btn" onclick="setMedWeek(2)">2</div>
+        <div class="week-num-btn" onclick="setMedWeek(3)">3</div>
+        <div class="week-num-btn" onclick="setMedWeek(4)">4</div>
+      </div>
 
-  <!-- 0. Return to Calendar -->
-  <button class="btn" onclick="window.location.href='../index.html';">Return to Calendar</button>
-  <br><br><br>
+      <!-- Flow -->
+      <div class="section-title">Flow</div>
+      <div class="radio-group" id="flowGroup">
+        <!-- <div class="radio-btn" onclick="setFlow('None')">None</div> -->
+        <div class="radio-btn" onclick="setFlow('Spotting')">Spotting</div>
+        <div class="radio-btn" onclick="setFlow('Light')">Light</div>
+        <div class="radio-btn" onclick="setFlow('Medium')">Medium</div>
+        <div class="radio-btn" onclick="setFlow('Heavy')">Heavy</div>
+      </div>
 
-  <!-- 1. Export Plain Text -->
-  <button class="btn" onclick="exportPlainText()">Export all Data as Plain Text</button>
+      <!-- Symptoms (Custom Multi-Select) -->
+      <div class="section-title">Symptoms</div>
+      <div class="custom-multiselect" id="customMultiselect">
+        <div class="dropdown-btn" onclick="toggleSymptomMenu(event)">
+          <span>Select Symptoms...</span>
+          <span style="font-size: 0.8rem;">▼</span>
+        </div>
+        <div class="dropdown-menu" id="dropdownMenu"></div>
+        <div class="selected-chips" id="selectedChips"></div>
+      </div>
 
-  <!-- 2. Export JSON -->
-  <button class="btn" onclick="exportLocalStorage()">Export localStorage (JSON)</button>
+      <!-- Daily Notes -->
+      <div class="section-title">Daily Notes</div>
+      <textarea id="dailyNotes" placeholder="Add notes for your doctor..." oninput="saveNotes()"></textarea>
+    </div>
 
-  <!-- 3. Import JSON -->
-  <button class="btn" onclick="document.getElementById('fileInput').click()">Import localStorage (JSON)</button>
-  <input type="file" id="fileInput" accept=".json" onchange="importLocalStorage(event)">
+    <!-- MONTH VIEW -->
+    <div id="monthView" class="view-panel">
+      <div class="header">
+        <button class="nav-btn" onclick="changeMonth(-1)">❮</button>
+        <div class="month-picker-title" onclick="toggleQuickMonthPicker()">
+          <h2 id="monthTitle">Month View</h2>
+          <span id="monthDropDown" style="font-size: 0.8rem;">▲</span>
+        </div>
+        <button class="nav-btn" onclick="changeMonth(1)">❯</button>
+      </div>
 
-  <!-- Plain Text Output Area -->
-  <textarea id="textOutput" readonly placeholder="Plain text data will display here..."></textarea>
+      <div class="quick-month-select" id="quickMonthSelect">
+        <select id="quickMonth" onchange="applyQuickMonth()"></select>
+        <select id="quickYear" onchange="applyQuickMonth()"></select>
+      </div>
 
-  <div style="flex: 1;"></div>
+      <div class="calendar-grid" id="calendarGrid"></div>
 
-  <!-- 4. Clear Data -->
-  <button class="btn btn-danger" onclick="clearData()">Clear all Data</button>
+      <button class="btn-generate-summary" onclick="toggleView('summary')">Generate Summary</button>
+    </div>
+
+    <!-- SUMMARY VIEW -->
+    <div id="summaryView" class="view-panel">
+      <div class="summary-container" id="summaryContainer">
+        <div class="summary-title">Summary Statistics</div>
+        
+        <div class="summary-section-title" id="trailingTitle" >Trailing # Weeks</div>
+        <div class="summary-section-title-desc" id="trailingTitleDates" >DDDD - DDDD</div>
+        <div class="summary-sub-section">
+          <div class="summary-sub-title">Flow Count by Med Week</div>
+          <table class="summary-table rounded-table">
+            <thead>
+              <tr>
+                <th>Week</th>
+                <th style="width: 14.75%">None</th>
+                <th style="width: 14.75%">Spot</th>
+                <th style="width: 14.75%">Lit</th>
+                <th style="width: 14.75%">Med</th>
+                <th style="width: 14.75%">Hvy</th>
+              </tr>
+            </thead>
+            <tbody id="flowTableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="summary-sub-section">
+          <div class="summary-sub-title">Top 3 Symptoms by Med Week</div>
+          <table class="summary-table rounded-table">
+            <thead>
+              <tr>
+                <th>Week</th>
+                <th style="width: 26.5%">1st</th>
+                <th style="width: 26.5%">2nd</th>
+                <th style="width: 26.5%">3rd</th>
+              </tr>
+            </thead>
+            <tbody id="symptomsByWeekTableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="summary-sub-section">
+          <div class="summary-sub-title">Top 3 Symptoms Overall</div>
+          <ol class="summary-list" id="topSymptomsOverallList" style="margin-left: 10px"></ol>
+        </div>
+        
+        <div class="summary-sub-section">
+          <div class="summary-sub-title">All Notes:</div>
+          <div class="summary-notes-list" id="allNotesList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAV BAR -->
+    <div class="nav-bar">
+      <button class="center-nav-btn" id="centerNavBtn" onclick="handleCenterNavClick()">📆</button>
+    </div>
+  </div><br>
+  <div class="app-footer-text">
+    <span>
+      <a href="./Utilities">Data is stored locally on your device, <b>unencrypted</b>.</a><br>
+      <b>Use at your own risk!</b> Not meant for PHI.<br>
+      NSS | Last Updated: 8/7/26
+    </span>
+  </div>
 </div>
-
 <script>
-  // 1. Clear Data
-  function clearData() {
-    const confirmed = confirm("Are you sure you want to do this?");
-    if (confirmed) {
-      localStorage.clear();
-      alert("All localStorage data has been cleared.");
-      document.getElementById('textOutput').style.display = 'none';
-    }
+  const symptomOptions = [
+    "Acne", "Anxiety", "Bladder Cramps", "Bloating", "Brain Fog", "Cramps", "Depression",
+    "Discomfort", "Dizziness", "Fatigue", "Headache", "Insomnia", "Irritability", "Low Appetite",
+    "Nausea", "Night sweats", "Overeating", "Poor Sleep"
+  ];
+
+  let selectedDate = new Date(); // Default today
+  let currentMonthView = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+
+  function getLogs() {
+    return JSON.parse(localStorage.getItem('symptom_logs') || '{}');
   }
 
-  // 2. Export as Plain Text
-  function exportPlainText() {
-    const rawData = localStorage.getItem('symptom_logs');
-    const outputArea = document.getElementById('textOutput');
+  // FIXED: Formats using local calendar date instead of UTC ISO string
+  function getKey(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
 
-    if (!rawData) {
-      outputArea.value = "No data found in localStorage.";
-      outputArea.style.display = 'block';
-      return;
+  function toggleSymptomMenu(e) {
+    e.stopPropagation();
+    document.getElementById('dropdownMenu').classList.toggle('show');
+  }
+
+  // Close custom dropdown when clicking anywhere outside
+  document.addEventListener('click', (e) => {
+    const container = document.getElementById('customMultiselect');
+    if (container && !container.contains(e.target)) {
+      document.getElementById('dropdownMenu').classList.remove('show');
+    }
+  });
+
+  function renderSymptomDropdown(currentSymptoms = []) {
+    const menu = document.getElementById('dropdownMenu');
+    menu.innerHTML = '';
+
+    symptomOptions.forEach(sym => {
+      const isSelected = currentSymptoms.includes(sym);
+      const opt = document.createElement('div');
+      opt.className = `dropdown-option ${isSelected ? 'selected' : ''}`;
+      opt.innerHTML = `
+        <span>${sym}</span>
+        <span>${isSelected ? '✓' : ''}</span>
+      `;
+      opt.onclick = (e) => {
+        e.stopPropagation();
+        toggleSymptom(sym);
+      };
+      menu.appendChild(opt);
+    });
+  }
+
+  function toggleSymptom(symptom) {
+    const key = getKey(selectedDate);
+    const logs = getLogs();
+    if (!logs[key]) logs[key] = { medWeek: null, flow: 'None', symptoms: [], notes: '' };
+    
+    const idx = logs[key].symptoms.indexOf(symptom);
+    if (idx > -1) {
+      logs[key].symptoms.splice(idx, 1);
+    } else {
+      logs[key].symptoms.push(symptom);
     }
 
-    const logs = JSON.parse(rawData);
-    const sortedDates = Object.keys(logs).sort(); // Sort chronologically
+    localStorage.setItem('symptom_logs', JSON.stringify(logs));
+    initDayView();
+  }
 
-    if (sortedDates.length === 0) {
-      outputArea.value = "No entries logged.";
-      outputArea.style.display = 'block';
-      return;
-    }
+  function initDayView() {
+    const key = getKey(selectedDate);
+    const logs = getLogs()[key] || { medWeek: null, flow: 'None', symptoms: [], notes: '' };
 
-    let result = "";
-    sortedDates.forEach(dateStr => {
-      const entry = logs[dateStr];
-      
-      // Parse YYYY-MM-DD into M/D/YY format
-      const [year, month, day] = dateStr.split('-');
-      const formattedDate = `${parseInt(month, 10)}/${parseInt(day, 10)}/${year.slice(-2)}`;
-
-      result += `Date: ${formattedDate}\n`;
-      result += `Med Week: ${entry.medWeek ?? 'N/A'}\n`;
-      result += `Flow: ${entry.flow ?? 'None'}\n`;
-      if (entry.symptoms && entry.symptoms.length > 0) {
-        result += `Symptoms: ${entry.symptoms.join(', ')}\n`;
-      }
-      result += `Notes: ${entry.notes || ''}\n\n`;
+    document.getElementById('currentDateTitle').innerText = selectedDate.toLocaleDateString('en-US', {
+      weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
     });
 
-    outputArea.value = result.trim();
-    outputArea.style.display = 'block';
+    // Highlight Medication Cycle Week
+    document.querySelectorAll('#weekNumGroup .week-num-btn').forEach((btn, idx) => {
+      btn.classList.toggle('selected', (idx + 1) === logs.medWeek);
+    });
+
+    // Highlight Flow Buttons
+    document.querySelectorAll('#flowGroup .radio-btn').forEach(btn => {
+      btn.classList.toggle('selected', btn.getAttribute('data-val') === logs.flow);
+    });
+
+    renderSymptomChips(logs.symptoms || []);
+    renderSymptomDropdown(logs.symptoms || []);
+    document.getElementById('dailyNotes').value = logs.notes || '';
+
+    // Bottom Bar State
+    document.getElementById('centerNavBtn').innerText = '📆';
   }
 
-  // 3. Export JSON file
-  function exportLocalStorage() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(localStorage));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `symptom_tracker_backup_${new Date().toISOString().split('T')[0]}.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
+  function setMedWeek(weekNum) {
+    const key = getKey(selectedDate);
+    const logs = getLogs();
+    if (!logs[key]) logs[key] = { medWeek: null, flow: 'None', symptoms: [], notes: '' };
+    
+    // Toggle off if clicking the currently selected week
+    logs[key].medWeek = logs[key].medWeek === weekNum ? null : weekNum;
+    localStorage.setItem('symptom_logs', JSON.stringify(logs));
+    initDayView();
   }
 
-  // 4. Import JSON file
-  function importLocalStorage(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        const importedData = JSON.parse(e.target.result);
-        
-        // Populate localStorage with imported items
-        Object.keys(importedData).forEach(key => {
-          localStorage.setItem(key, importedData[key]);
-        });
-
-        alert("Data successfully imported!");
-      } catch (err) {
-        alert("Error parsing JSON file. Please ensure it is a valid backup.");
-      }
+  function setFlow(val) {
+    const key = getKey(selectedDate);
+    const logs = getLogs();
+    if (!logs[key]) logs[key] = { medWeek: null, flow: 'None', symptoms: [], notes: '' };
+    if (logs[key].flow === val) {
+      logs[key].flow = 'None';
+    } else {
+      logs[key].flow = val;
     };
-    reader.readAsText(file);
+    localStorage.setItem('symptom_logs', JSON.stringify(logs));
+    initDayView();
   }
+
+  function removeSymptom(symptom) {
+    toggleSymptom(symptom);
+  }
+
+  function renderSymptomChips(symptoms) {
+    const container = document.getElementById('selectedChips');
+    container.innerHTML = '';
+    symptoms.forEach(sym => {
+      const chip = document.createElement('div');
+      chip.className = 'chip';
+      chip.innerHTML = `${sym} <span class="remove" onclick="removeSymptom('${sym}')">✕</span>`;
+      container.appendChild(chip);
+    });
+  }
+
+  function saveNotes() {
+    const key = getKey(selectedDate);
+    const logs = getLogs();
+    if (!logs[key]) logs[key] = { medWeek: null, flow: 'None', symptoms: [], notes: '' };
+    logs[key].notes = document.getElementById('dailyNotes').value;
+    localStorage.setItem('symptom_logs', JSON.stringify(logs));
+  }
+
+  function navigateDay(offset) {
+    selectedDate.setDate(selectedDate.getDate() + offset);
+    document.getElementById('dropdownMenu').classList.remove('show');
+    initDayView();
+  }
+
+  function renderMonthView() {
+    const grid = document.getElementById('calendarGrid');
+    grid.innerHTML = '';
+    
+    document.getElementById('monthTitle').innerText = currentMonthView.toLocaleDateString('en-US', {
+      month: 'long', year: 'numeric'
+    });
+
+    const days = ['S','M','T','W','T','F','S'];
+    days.forEach(d => grid.innerHTML += `<div class="cal-day-header">${d}</div>`);
+
+    const firstDay = new Date(currentMonthView.getFullYear(), currentMonthView.getMonth(), 1).getDay();
+    const daysInMonth = new Date(currentMonthView.getFullYear(), currentMonthView.getMonth() + 1, 0).getDate();
+    const logs = getLogs();
+
+    for (let i = 0; i < firstDay; i++) {
+      grid.innerHTML += `<div></div>`;
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateObj = new Date(currentMonthView.getFullYear(), currentMonthView.getMonth(), d);
+      const key = getKey(dateObj);
+      const dayLog = logs[key];
+      const flow = dayLog ? dayLog.flow : 'None';
+      const medWeek = dayLog ? dayLog.medWeek : 0;
+      const dayEl = document.createElement('div');
+
+      let bg = 'var(--status-none-cal)';
+      if (flow === 'Spotting') {
+        bg = 'var(--polka-bg-color)';
+        dayEl.style.backgroundImage = 'var(--polka-pattern)';
+        dayEl.style.backgroundPosition = 'var(--polka-position)';
+        dayEl.style.backgroundSize = 'var(--polka-size)';
+      }
+      if (flow === 'Light') bg = 'var(--status-light)';
+      if (flow === 'Medium') bg = 'var(--status-medium)';
+      if (flow === 'Heavy') bg = 'var(--status-heavy)';
+
+      dayEl.className = 'cal-day';
+      dayEl.innerText = d;
+      dayEl.style.backgroundColor = bg;
+      if (flow === 'Medium' || flow === 'Heavy') dayEl.style.color = '#fff';
+      
+      if (medWeek === 4) {
+        dayEl.style.borderColor = 'var(--status-week4)';
+        dayEl.style.borderWidth = '8px';
+      }
+
+      dayEl.onclick = () => {
+        selectedDate = dateObj;
+        toggleView('day');
+      };
+
+      grid.appendChild(dayEl);
+    }
+
+    document.getElementById('centerNavBtn').innerText = '🏠';
+  }
+
+  function changeMonth(dir) {
+    currentMonthView.setMonth(currentMonthView.getMonth() + dir);
+    renderMonthView();
+  }
+
+  function toggleQuickMonthPicker() {
+    const container = document.getElementById('quickMonthSelect');
+    const isShowing = container.classList.contains('active');
+    
+    if (!isShowing) {
+      populateQuickSelectors();
+      container.classList.add('active');
+      document.getElementById('monthDropDown').innerText = '▼';
+    } else {
+      container.classList.remove('active');
+      document.getElementById('monthDropDown').innerText = '▲';
+    }
+  }
+
+  function populateQuickSelectors() {
+    const monthSel = document.getElementById('quickMonth');
+    const yearSel = document.getElementById('quickYear');
+    const today = new Date();
+    
+    monthSel.innerHTML = '';
+    yearSel.innerHTML = '';
+
+    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    months.forEach((m, idx) => {
+      const opt = document.createElement('option');
+      opt.value = idx;
+      opt.innerText = m;
+      if (idx === currentMonthView.getMonth()) opt.selected = true;
+      monthSel.appendChild(opt);
+    });
+
+    for (let y = today.getFullYear()-2; y <= today.getFullYear()+2; y++) {
+      const opt = document.createElement('option');
+      opt.value = y;
+      opt.innerText = y;
+      if (y === currentMonthView.getFullYear()) opt.selected = true;
+      yearSel.appendChild(opt);
+    }
+  }
+
+  function applyQuickMonth() {
+    const m = parseInt(document.getElementById('quickMonth').value);
+    const y = parseInt(document.getElementById('quickYear').value);
+    currentMonthView = new Date(y, m, 1);
+    renderMonthView();
+  }
+
+  function renderSummaryView() {
+    const logs = getLogs();
+    const today = new Date();
+    const weekCt = 12;
+
+    // Data Aggregation structures for trailing 12 Weeks / 84 days
+    const flowByWeek = 	{ 1: { None: 0, Spotting: 0, Light: 0, Medium: 0, Heavy: 0 },
+                          2: { None: 0, Spotting: 0, Light: 0, Medium: 0, Heavy: 0 },
+                          3: { None: 0, Spotting: 0, Light: 0, Medium: 0, Heavy: 0 },
+                          4: { None: 0, Spotting: 0, Light: 0, Medium: 0, Heavy: 0 } };
+
+    const symptomsByWeek = { 1: {}, 2: {}, 3: {}, 4: {} };
+    const overallSymptoms = {};
+    const notesLog = [];
+
+    let startDate = new Date();
+    const daysAgo = (weekCt*7);
+	
+    for (let i = 0; i < daysAgo; i++) {
+      startDate = new Date();
+      startDate.setDate(today.getDate() - i);
+      const key = getKey(startDate);
+      const dayLog = logs[key];
+      console.log("dayLog",dayLog);
+
+      if (dayLog) {
+        const weekNum = dayLog.medWeek;
+        const flow = dayLog.flow || 'None';
+
+        if (weekNum && flowByWeek[weekNum]) {
+          flowByWeek[weekNum][flow] = (flowByWeek[weekNum][flow] || 0) + 1;
+        }
+
+        if (weekNum && dayLog.symptoms) {
+          dayLog.symptoms.forEach(sym => {
+            symptomsByWeek[weekNum][sym] = (symptomsByWeek[weekNum][sym] || 0) + 1;
+          });
+        }
+
+        if (dayLog.symptoms) {
+          dayLog.symptoms.forEach(sym => {
+            overallSymptoms[sym] = (overallSymptoms[sym] || 0) + 1;
+          });
+        }
+
+        if (dayLog.notes && dayLog.notes.trim()) {
+          notesLog.push({ dateStr: key, text: dayLog.notes.trim() });
+        }
+      }
+    }
+
+    // 0. Update titles
+    const dateOpts = { weekday: 'short', year: '2-digit', month: 'numeric', day: 'numeric' };
+    const sumTitle = document.getElementById('trailingTitle');
+    sumTitle.innerHTML = 'Trailing ' + weekCt + ' Weeks';
+    const sumTitleDateDescr = document.getElementById('trailingTitleDates');
+    sumTitleDateDescr.innerHTML = startDate.toLocaleDateString('en-US', dateOpts) + ' - ' + today.toLocaleDateString('en-US', dateOpts);
+
+    // 1. Render Flow Count Table
+    const sevTableBody = document.getElementById('flowTableBody');
+    sevTableBody.innerHTML = '';
+    [1, 2, 3, 4].forEach(w => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${w}</td>
+        <td>${flowByWeek[w].None}</td>
+        <td>${flowByWeek[w].Spotting}</td>
+        <td>${flowByWeek[w].Light}</td>
+        <td>${flowByWeek[w].Medium}</td>
+        <td>${flowByWeek[w].Heavy}</td>
+      `;
+      sevTableBody.appendChild(row);
+    });
+
+    // 2. Render Top 3 Symptoms by Med Week Table
+    const symWeekTableBody = document.getElementById('symptomsByWeekTableBody');
+    symWeekTableBody.innerHTML = '';
+    [1, 2, 3, 4].forEach(w => {
+      const sorted = Object.entries(symptomsByWeek[w])
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3);
+
+      const cell1 = sorted[0] ? `${sorted[0][0]} (${sorted[0][1]})` : '-';
+      const cell2 = sorted[1] ? `${sorted[1][0]} (${sorted[1][1]})` : '-';
+      const cell3 = sorted[2] ? `${sorted[2][0]} (${sorted[2][1]})` : '-';
+
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${w}</td>
+        <td>${cell1}</td>
+        <td>${cell2}</td>
+        <td>${cell3}</td>
+      `;
+      symWeekTableBody.appendChild(row);
+    });
+
+    // 3. Render Top 3 Symptoms Overall List
+    const topOverallList = document.getElementById('topSymptomsOverallList');
+    topOverallList.innerHTML = '';
+    const sortedOverall = Object.entries(overallSymptoms)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3);
+
+    if (sortedOverall.length === 0) {
+      topOverallList.innerHTML = '<li>No symptoms logged yet.</li>';
+    } else {
+      sortedOverall.forEach(([sym, count]) => {
+        topOverallList.innerHTML += `<li>${sym} (${count})</li>`;
+      });
+    }
+
+    // 4. Render All Notes
+    const notesContainer = document.getElementById('allNotesList');
+    notesContainer.innerHTML = '';
+    if (notesLog.length === 0) {
+      notesContainer.innerText = 'No notes recorded in the last ' + weekCt + ' weeks.';
+    } else {
+      notesLog.forEach(n => {
+        const item = document.createElement('div');
+        item.className = 'summary-note-item';
+        item.innerHTML = `<strong>${n.dateStr}:</strong> ${n.text}`;
+
+        notesContainer.appendChild(item);
+      });
+    }
+
+    // Updated icon for Summary view
+    document.getElementById('centerNavBtn').innerText = '📆';
+  }
+
+  function handleCenterNavClick() {
+    const dayView = document.getElementById('dayView');
+    const summaryView = document.getElementById('summaryView');
+    
+    // Switch to Month view if Day OR Summary view is currently active
+    if (dayView.classList.contains('active') || summaryView.classList.contains('active')) {
+      toggleView('month');
+    } else {
+      currentMonthView = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+      renderMonthView();
+    }
+  }
+
+  function toggleView(target) {
+    const dayView = document.getElementById('dayView');
+    const monthView = document.getElementById('monthView');
+    const summaryView = document.getElementById('summaryView');
+    
+    document.getElementById('quickMonthSelect').classList.remove('active');
+    
+    dayView.classList.remove('active');
+    monthView.classList.remove('active');
+    summaryView.classList.remove('active');
+
+    if (target === 'day') {
+      dayView.classList.add('active');
+      initDayView();
+    } else if (target === 'month') {
+      monthView.classList.add('active');
+      renderMonthView();
+    } else if (target === 'summary') {
+      summaryView.classList.add('active');
+      renderSummaryView();
+    }
+  }
+
+  document.querySelectorAll('#flowGroup .radio-btn').forEach(btn => {
+    btn.setAttribute('data-val', btn.innerText);
+  });
+
+  initDayView();
 </script>
 </body>
 </html>
