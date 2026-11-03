@@ -868,8 +868,14 @@
   }
 
   function changeMonth(dir) {
-    currentMonthView.setMonth(currentMonthView.getMonth() + dir);
-    renderMonthView();
+      currentMonthView.setMonth(currentMonthView.getMonth() + dir);
+
+      // Trigger the transition effect on the month view
+      currentMonthView.classList.remove('slide-fade-anim');
+      void currentMonthView.offsetWidth; // Forces browser reflow to restart the animation
+      currentMonthView.classList.add('slide-fade-anim');
+
+      renderMonthView();
   }
 
   function toggleQuickMonthPicker() {
