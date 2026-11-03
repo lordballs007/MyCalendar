@@ -447,6 +447,22 @@
       align-items: center;
       justify-content: center;
     }
+
+    @keyframes slideFade {
+        0% {
+            opacity: 0.3;
+            transform: translateY(6px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .slide-fade-anim {
+        animation: slideFade 0.2s ease-in-out;
+    }
   </style>
 </head>
 <body>
@@ -766,6 +782,13 @@
   function navigateDay(offset) {
     selectedDate.setDate(selectedDate.getDate() + offset);
     document.getElementById('dropdownMenu').classList.remove('show');
+
+    // Trigger the transition effect on the day view
+    const dayView = document.getElementById('dayView');
+    dayView.classList.remove('slide-fade-anim');
+    void dayView.offsetWidth; // Forces browser reflow to restart the animation
+    dayView.classList.add('slide-fade-anim');
+
     initDayView();
   }
 
