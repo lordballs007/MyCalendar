@@ -871,9 +871,10 @@
       currentMonthView.setMonth(currentMonthView.getMonth() + dir);
 
       // Trigger the transition effect on the month view
-      currentMonthView.classList.remove('slide-fade-anim');
-      void currentMonthView.offsetWidth; // Forces browser reflow to restart the animation
-      currentMonthView.classList.add('slide-fade-anim');
+      const monthView = document.getElementById('monthView');
+      monthView.classList.remove('slide-fade-anim');
+      void monthView.offsetWidth; // Forces browser reflow to restart the animation
+      monthView.classList.add('slide-fade-anim');
 
       renderMonthView();
   }
