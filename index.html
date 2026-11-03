@@ -591,6 +591,44 @@
   let selectedDate = new Date(); // Default today
   let currentMonthView = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
 
+  // Touch coordinate tracking variables
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  const appContainer = document.querySelector('.app-container');
+
+  appContainer.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
+
+  appContainer.addEventListener('touchend', e => {0
+      // Only trigger swipe in Day View to prevent accidental triggers elsewhere
+      const dayView = document.getElementById('dayView');
+      if (!dayView.classList.contains('active')) return;
+
+      const touchEndX = e.changedTouches[0].screenX;
+      const touchEndY = e.changedTouches[0].screenY;
+  
+      handleSwipe(touchStartX, touchStartY, touchEndX, touchEndY);
+  }, { passive: true });
+
+  function handleSwipe(startX, startY, endX, endY) {
+      const diffX = endX - startX;
+      const diffY = endY - startY;
+  
+      // Ensure it's a deliberate horizontal swipe (more horizontal distance than vertical, and > 50px threshold)
+      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+          if (diffX > 0) {
+              // Swiped right -> Go to previous day
+              navigateDay(-1);
+          } else {
+              // Swiped left -> Go to next day
+              navigateDay(1);
+          }
+      }
+  }
+
   function getLogs() {
     return JSON.parse(localStorage.getItem('symptom_logs') || '{}');
   }
